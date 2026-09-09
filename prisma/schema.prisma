@@ -1,0 +1,113 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum MisDayStatus {
+  DRAFT
+  SUBMITTED
+  LOCKED
+}
+
+enum LoomMaterial {
+  PP
+  LPP
+  GB
+}
+
+/// One calendar day = one MIS record with four independent sheets.
+model MisDay {
+  id        String       @id @default(cuid())
+  date      DateTime     @unique @db.Date
+  status    MisDayStatus @default(DRAFT)
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  productionSectionA    ProductionSectionA?
+  runSheet              RunSheet?
+  productionPerformance ProductionPerformance?
+  loomMaterials         LoomMaterialRow[]
+}
+
+/// Sheet 1 — Production / Section A
+model ProductionSectionA {
+  id       String @id @default(cuid())
+  misDayId String @unique
+  misDay   MisDay @relation(fields: [misDayId], references: [id], onDelete: Cascade)
+
+  productionA  Decimal @default(0) @db.Decimal(14, 2)
+  productionB  Decimal @default(0) @db.Decimal(14, 2)
+  wastageA     Decimal @default(0) @db.Decimal(14, 2)
+  wastageB     Decimal @default(0) @db.Decimal(14, 2)
+  efficiencyA  Decimal @default(0) @db.Decimal(8, 2)
+  efficiencyB  Decimal @default(0) @db.Decimal(8, 2)
+  rpA          Decimal @default(0) @db.Decimal(14, 2)
+  rpB          Decimal @default(0) @db.Decimal(14, 2)
+
+  totalProduction     Decimal @default(0) @db.Decimal(14, 2)
+  totalWastage        Decimal @default(0) @db.Decimal(14, 2)
+  totalRp             Decimal @default(0) @db.Decimal(14, 2)
+  wastagePercentA     Decimal @default(0) @db.Decimal(8, 2)
+  wastagePercentB     Decimal @default(0) @db.Decimal(8, 2)
+  wastagePercentTotal Decimal @default(0) @db.Decimal(8, 2)
+}
+
+/// Sheet 2 — Run
+model RunSheet {
+  id       String @id @default(cuid())
+  misDayId String @unique
+  misDay   MisDay @relation(fields: [misDayId], references: [id], onDelete: Cascade)
+
+  shiftA          Decimal @default(0) @db.Decimal(14, 2)
+  shiftB          Decimal @default(0) @db.Decimal(14, 2)
+  totalRunPlanned Decimal @default(0) @db.Decimal(14, 2)
+
+  totalRun   Decimal @default(0) @db.Decimal(14, 2)
+  gapPercent Decimal @default(0) @db.Decimal(8, 2)
+}
+
+/// Sheet 3 — Production Performance
+model ProductionPerformance {
+  id       String @id @default(cuid())
+  misDayId String @unique
+  misDay   MisDay @relation(fields: [misDayId], references: [id], onDelete: Cascade)
+
+  productionA Decimal @default(0) @db.Decimal(14, 2)
+  productionB Decimal @default(0) @db.Decimal(14, 2)
+  loomRunA    Decimal @default(0) @db.Decimal(14, 2)
+  loomRunB    Decimal @default(0) @db.Decimal(14, 2)
+  wastageA    Decimal @default(0) @db.Decimal(14, 2)
+  wastageB    Decimal @default(0) @db.Decimal(14, 2)
+
+  totalProduction      Decimal @default(0) @db.Decimal(14, 2)
+  totalLoomRun         Decimal @default(0) @db.Decimal(14, 2)
+  totalWastage         Decimal @default(0) @db.Decimal(14, 2)
+  productionAvgA       Decimal @default(0) @db.Decimal(14, 2)
+  productionAvgB       Decimal @default(0) @db.Decimal(14, 2)
+  productionAvgTotal   Decimal @default(0) @db.Decimal(14, 2)
+  wastagePercentA      Decimal @default(0) @db.Decimal(8, 2)
+  wastagePercentB      Decimal @default(0) @db.Decimal(8, 2)
+  wastagePercentTotal  Decimal @default(0) @db.Decimal(8, 2)
+}
+
+/// Sheet 4 — Loom Performance (one row per material)
+model LoomMaterialRow {
+  id       String       @id @default(cuid())
+  misDayId String
+  material LoomMaterial
+  misDay   MisDay       @relation(fields: [misDayId], references: [id], onDelete: Cascade)
+
+  productionA        Decimal @default(0) @db.Decimal(14, 2)
+  loomsRunA          Decimal @default(0) @db.Decimal(14, 2)
+  productionPerLoomA Decimal @default(0) @db.Decimal(14, 2)
+
+  productionB        Decimal @default(0) @db.Decimal(14, 2)
+  loomsRunB          Decimal @default(0) @db.Decimal(14, 2)
+  productionPerLoomB Decimal @default(0) @db.Decimal(14, 2)
+
+  @@unique([misDayId, material])
+}
