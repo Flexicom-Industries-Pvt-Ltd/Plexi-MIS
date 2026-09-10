@@ -11,6 +11,7 @@
     "test:watch": "vitest",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
+    "hooks:install": "node scripts/install-git-hooks.mjs",
     "postinstall": "prisma generate"
   },
   "dependencies": {
