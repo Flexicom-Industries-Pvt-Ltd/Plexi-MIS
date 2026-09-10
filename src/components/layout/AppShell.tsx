@@ -32,8 +32,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <Link href="/" className="flex items-center gap-2.5">
             <div className="flex shrink-0 items-center justify-center rounded-lg border border-slate-100 bg-white p-1 shadow-sm">
               <Image
-                src="/logo.png"
-                alt="Flexicom"
+                src="/icon.png"
+                alt="Plascom MIS"
                 width={36}
                 height={36}
                 className="h-9 w-9 object-contain"

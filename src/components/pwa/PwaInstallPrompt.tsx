@@ -95,7 +95,7 @@ export function PwaInstallPrompt() {
     >
       <div className="mx-auto flex max-w-6xl items-start gap-3">
         <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white p-1">
-          <Image src="/logo.png" alt="" width={40} height={40} className="h-full w-full object-contain" aria-hidden />
+          <Image src="/icon.png" alt="" width={40} height={40} className="h-full w-full object-contain" aria-hidden />
         </div>
         <div className="min-w-0 flex-1">
           <p className="font-semibold">Install Plascom MIS</p>

@@ -16,7 +16,6 @@ Standalone daily production MIS for Plascom — four independent sheets per cale
 
 ```bash
 npm install
-node scripts/generate-icons.mjs
 ```
 
 3. Push schema:

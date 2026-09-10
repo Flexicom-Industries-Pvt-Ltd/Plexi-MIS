@@ -12,8 +12,7 @@
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
     "hooks:install": "node scripts/install-git-hooks.mjs",
-    "icons": "node scripts/generate-icons.mjs",
-    "postinstall": "prisma generate && node scripts/generate-icons.mjs"
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@ducanh2912/next-pwa": "^10.2.9",
