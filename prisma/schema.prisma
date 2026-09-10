@@ -19,6 +19,14 @@ enum LoomMaterial {
   GB
 }
 
+enum RunMaterial {
+  PP
+  CC
+  RP
+  MB
+  TPT
+}
+
 /// One calendar day = one MIS record with four independent sheets.
 model MisDay {
   id        String       @id @default(cuid())
@@ -28,7 +36,7 @@ model MisDay {
   updatedAt DateTime     @updatedAt
 
   productionSectionA    ProductionSectionA?
-  runSheet              RunSheet?
+  runMaterials          RunMaterialRow[]
   productionPerformance ProductionPerformance?
   loomMaterials         LoomMaterialRow[]
 }
@@ -56,11 +64,12 @@ model ProductionSectionA {
   wastagePercentTotal Decimal @default(0) @db.Decimal(8, 2)
 }
 
-/// Sheet 2 — Run
-model RunSheet {
-  id       String @id @default(cuid())
-  misDayId String @unique
-  misDay   MisDay @relation(fields: [misDayId], references: [id], onDelete: Cascade)
+/// Sheet 2 — Run MIS (one row per material)
+model RunMaterialRow {
+  id       String      @id @default(cuid())
+  misDayId String
+  material RunMaterial
+  misDay   MisDay      @relation(fields: [misDayId], references: [id], onDelete: Cascade)
 
   shiftA          Decimal @default(0) @db.Decimal(14, 2)
   shiftB          Decimal @default(0) @db.Decimal(14, 2)
@@ -68,6 +77,8 @@ model RunSheet {
 
   totalRun   Decimal @default(0) @db.Decimal(14, 2)
   gapPercent Decimal @default(0) @db.Decimal(8, 2)
+
+  @@unique([misDayId, material])
 }
 
 /// Sheet 3 — Production Performance

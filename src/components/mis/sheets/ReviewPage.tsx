@@ -66,7 +66,6 @@ export function ReviewPage({ dateKey }: { dateKey: string }) {
   if (loadError || !data) return <p className="text-red-600">{loadError}</p>;
 
   const s1 = data.sheet1;
-  const s2 = data.sheet2;
   const s3 = data.sheet3;
 
   return (
@@ -92,12 +91,22 @@ export function ReviewPage({ dateKey }: { dateKey: string }) {
           </Link>
         </Section>
 
-        <Section title="Sheet 2 - Run">
-          {s2 ? (
+        <Section title="Sheet 2 - Run MIS">
+          {data.sheet2?.length ? (
             <>
-              <Row label="Total Run" value={s2.totalRun} />
-              <Row label="Planned Run" value={s2.totalRunPlanned} />
-              <Row label="Gap %" value={`${formatNumber(s2.gapPercent)}%`} />
+              {data.sheet2.map((row) => (
+                <div key={row.material} className="mb-2 border-b border-slate-100 pb-2 last:mb-0 last:border-0">
+                  <p className="font-semibold text-slate-800">{row.material}</p>
+                  <Row label="A / B / Total Run" value={`${formatNumber(row.shiftA)} / ${formatNumber(row.shiftB)} / ${formatNumber(row.totalRun)}`} />
+                  <Row label="Planned / Gap %" value={`${formatNumber(row.totalRunPlanned)} / ${formatNumber(row.gapPercent)}%`} />
+                </div>
+              ))}
+              {data.sheet2Totals ? (
+                <Row
+                  label="All materials total"
+                  value={`Run ${formatNumber(data.sheet2Totals.totalRun)} | Planned ${formatNumber(data.sheet2Totals.totalRunPlanned)} | Gap ${formatNumber(data.sheet2Totals.gapPercent)}%`}
+                />
+              ) : null}
             </>
           ) : (
             <p className="text-slate-500">No data yet.</p>

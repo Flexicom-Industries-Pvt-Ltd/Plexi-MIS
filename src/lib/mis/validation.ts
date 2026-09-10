@@ -13,10 +13,18 @@ export const sheet1Schema = z.object({
   rpB: nonNegative,
 });
 
-export const sheet2Schema = z.object({
+export const sheet2MaterialSchema = z.object({
   shiftA: nonNegative,
   shiftB: nonNegative,
   totalRunPlanned: nonNegative,
+});
+
+export const sheet2Schema = z.object({
+  PP: sheet2MaterialSchema,
+  CC: sheet2MaterialSchema,
+  RP: sheet2MaterialSchema,
+  MB: sheet2MaterialSchema,
+  TPT: sheet2MaterialSchema,
 });
 
 export const sheet3Schema = z.object({

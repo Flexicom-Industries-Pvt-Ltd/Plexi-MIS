@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
+  aggregateSheet2,
   calculateSheet1,
-  calculateSheet2,
+  calculateSheet2Material,
   calculateSheet3,
   calculateSheet4Material,
   percent,
@@ -46,9 +47,9 @@ describe("Sheet 1 - Production / Section A", () => {
   });
 });
 
-describe("Sheet 2 - Run", () => {
-  it("calculates total run and gap percent", () => {
-    const result = calculateSheet2({
+describe("Sheet 2 - Run MIS", () => {
+  it("calculates total run and gap percent per material", () => {
+    const result = calculateSheet2Material({
       shiftA: 120,
       shiftB: 80,
       totalRunPlanned: 250,
@@ -59,7 +60,7 @@ describe("Sheet 2 - Run", () => {
   });
 
   it("handles zero planned run", () => {
-    const result = calculateSheet2({
+    const result = calculateSheet2Material({
       shiftA: 50,
       shiftB: 50,
       totalRunPlanned: 0,
@@ -67,6 +68,17 @@ describe("Sheet 2 - Run", () => {
 
     expect(result.totalRun).toBe(100);
     expect(result.gapPercent).toBe(0);
+  });
+
+  it("aggregates totals across PP, CC, RP, MB, TPT", () => {
+    const rows = [
+      { shiftA: 100, shiftB: 50, totalRunPlanned: 200, ...calculateSheet2Material({ shiftA: 100, shiftB: 50, totalRunPlanned: 200 }) },
+      { shiftA: 80, shiftB: 70, totalRunPlanned: 180, ...calculateSheet2Material({ shiftA: 80, shiftB: 70, totalRunPlanned: 180 }) },
+    ];
+    const totals = aggregateSheet2(rows);
+    expect(totals.totalRun).toBe(300);
+    expect(totals.totalRunPlanned).toBe(380);
+    expect(totals.gapPercent).toBeCloseTo(21.05, 1);
   });
 });
 

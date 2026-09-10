@@ -4,7 +4,7 @@ import { CalculatedField } from "../CalculatedField";
 import { NumericInput } from "../NumericInput";
 import {
   calculateSheet1,
-  calculateSheet2,
+  calculateSheet2Material,
   calculateSheet3,
   calculateSheet4Material,
 } from "@/lib/calculations/mis-calculations";
@@ -23,7 +23,7 @@ describe("Critical MIS workflow calculations", () => {
     });
     expect(s1.totalProduction).toBe(1900);
 
-    const s2 = calculateSheet2({ shiftA: 120, shiftB: 110, totalRunPlanned: 250 });
+    const s2 = calculateSheet2Material({ shiftA: 120, shiftB: 110, totalRunPlanned: 250 });
     expect(s2.totalRun).toBe(230);
 
     const s3 = calculateSheet3({

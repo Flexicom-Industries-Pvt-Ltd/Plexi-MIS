@@ -63,19 +63,21 @@ export function calculateSheet1(input: Sheet1Input): Sheet1Calculated {
   };
 }
 
-// Sheet 2 — Run
-export type Sheet2Input = {
+// Sheet 2 — Run MIS (per material)
+export type Sheet2MaterialInput = {
   shiftA: number;
   shiftB: number;
   totalRunPlanned: number;
 };
 
-export type Sheet2Calculated = {
+export type Sheet2MaterialCalculated = {
   totalRun: number;
   gapPercent: number;
 };
 
-export function calculateSheet2(input: Sheet2Input): Sheet2Calculated {
+export function calculateSheet2Material(
+  input: Sheet2MaterialInput,
+): Sheet2MaterialCalculated {
   const shiftA = toNum(input.shiftA);
   const shiftB = toNum(input.shiftB);
   const totalRunPlanned = toNum(input.totalRunPlanned);
@@ -87,6 +89,23 @@ export function calculateSheet2(input: Sheet2Input): Sheet2Calculated {
       : round2(((totalRunPlanned - totalRun) / totalRunPlanned) * 100);
 
   return { totalRun, gapPercent };
+}
+
+export const RUN_MATERIALS = ["PP", "CC", "RP", "MB", "TPT"] as const;
+export type RunMaterialCode = (typeof RUN_MATERIALS)[number];
+
+/** Aggregate totals across all run materials for dashboards. */
+export function aggregateSheet2(
+  rows: Array<Sheet2MaterialInput & Sheet2MaterialCalculated>,
+) {
+  const totalRun = round2(rows.reduce((sum, r) => sum + toNum(r.totalRun), 0));
+  const totalRunPlanned = round2(rows.reduce((sum, r) => sum + toNum(r.totalRunPlanned), 0));
+  const gapPercent =
+    totalRunPlanned <= 0
+      ? 0
+      : round2(((totalRunPlanned - totalRun) / totalRunPlanned) * 100);
+
+  return { totalRun, totalRunPlanned, gapPercent };
 }
 
 // Sheet 3 — Production Performance

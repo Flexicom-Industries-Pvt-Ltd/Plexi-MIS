@@ -1,18 +1,25 @@
 import { format, parseISO, startOfDay } from "date-fns";
-import type { LoomMaterial, MisDayStatus } from "@/generated/prisma";
+import type { LoomMaterial, MisDayStatus, RunMaterial } from "@/generated/prisma";
 import { db } from "@/lib/db";
 import {
+  aggregateSheet2,
   calculateSheet1,
-  calculateSheet2,
+  calculateSheet2Material,
   calculateSheet3,
   calculateSheet4Material,
   LOOM_MATERIALS,
+  RUN_MATERIALS,
 } from "@/lib/calculations/mis-calculations";
-import type { Sheet1Input, Sheet2Input, Sheet3Input, Sheet4MaterialInput } from "@/lib/calculations/mis-calculations";
+import type {
+  Sheet1Input,
+  Sheet2MaterialInput,
+  Sheet3Input,
+  Sheet4MaterialInput,
+} from "@/lib/calculations/mis-calculations";
 
 const MIS_INCLUDE = {
   productionSectionA: true,
-  runSheet: true,
+  runMaterials: true,
   productionPerformance: true,
   loomMaterials: true,
 } as const;
@@ -41,15 +48,24 @@ async function ensureMisDay(dateKey: string) {
       data: {
         date,
         productionSectionA: { create: {} },
-        runSheet: { create: {} },
         productionPerformance: { create: {} },
+        runMaterials: {
+          create: RUN_MATERIALS.map((material) => ({ material: material as RunMaterial })),
+        },
         loomMaterials: {
           create: LOOM_MATERIALS.map((material) => ({ material: material as LoomMaterial })),
         },
       },
       include: MIS_INCLUDE,
     });
-  } else if (misDay.loomMaterials.length < 3) {
+  } else {
+    for (const material of RUN_MATERIALS) {
+      await db.runMaterialRow.upsert({
+        where: { misDayId_material: { misDayId: misDay.id, material: material as RunMaterial } },
+        create: { misDayId: misDay.id, material: material as RunMaterial },
+        update: {},
+      });
+    }
     for (const material of LOOM_MATERIALS) {
       await db.loomMaterialRow.upsert({
         where: { misDayId_material: { misDayId: misDay.id, material: material as LoomMaterial } },
@@ -110,16 +126,22 @@ export async function saveSheet1(dateKey: string, input: Sheet1Input) {
   return getMisDay(dateKey);
 }
 
-export async function saveSheet2(dateKey: string, input: Sheet2Input) {
+export async function saveSheet2(
+  dateKey: string,
+  materials: Record<"PP" | "CC" | "RP" | "MB" | "TPT", Sheet2MaterialInput>,
+) {
   const misDay = await ensureMisDay(dateKey);
   assertEditable(misDay.status);
-  const calc = calculateSheet2(input);
 
-  await db.runSheet.upsert({
-    where: { misDayId: misDay.id },
-    create: { misDayId: misDay.id, ...input, ...calc },
-    update: { ...input, ...calc },
-  });
+  for (const material of RUN_MATERIALS) {
+    const input = materials[material];
+    const calc = calculateSheet2Material(input);
+    await db.runMaterialRow.upsert({
+      where: { misDayId_material: { misDayId: misDay.id, material: material as RunMaterial } },
+      create: { misDayId: misDay.id, material: material as RunMaterial, ...input, ...calc },
+      update: { ...input, ...calc },
+    });
+  }
 
   return getMisDay(dateKey);
 }
@@ -194,6 +216,17 @@ export function serializeMisDay(misDay: Awaited<ReturnType<typeof getMisDay>>) {
   const num = (v: { toString(): string } | number | null | undefined) =>
     v == null ? 0 : Number(v);
 
+  const sheet2Rows = misDay.runMaterials.map((row) => ({
+    material: row.material,
+    shiftA: num(row.shiftA),
+    shiftB: num(row.shiftB),
+    totalRunPlanned: num(row.totalRunPlanned),
+    totalRun: num(row.totalRun),
+    gapPercent: num(row.gapPercent),
+  }));
+
+  const sheet2Totals = aggregateSheet2(sheet2Rows);
+
   return {
     id: misDay.id,
     date: toDateKey(misDay.date),
@@ -216,15 +249,8 @@ export function serializeMisDay(misDay: Awaited<ReturnType<typeof getMisDay>>) {
           wastagePercentTotal: num(misDay.productionSectionA.wastagePercentTotal),
         }
       : null,
-    sheet2: misDay.runSheet
-      ? {
-          shiftA: num(misDay.runSheet.shiftA),
-          shiftB: num(misDay.runSheet.shiftB),
-          totalRunPlanned: num(misDay.runSheet.totalRunPlanned),
-          totalRun: num(misDay.runSheet.totalRun),
-          gapPercent: num(misDay.runSheet.gapPercent),
-        }
-      : null,
+    sheet2: sheet2Rows,
+    sheet2Totals,
     sheet3: misDay.productionPerformance
       ? {
           productionA: num(misDay.productionPerformance.productionA),
