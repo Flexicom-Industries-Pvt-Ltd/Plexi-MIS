@@ -50,4 +50,5 @@ function png(size, r, g, b) {
 
 writeFileSync(join(dir, "icon-192.png"), png(192, 3, 105, 161));
 writeFileSync(join(dir, "icon-512.png"), png(512, 3, 105, 161));
+writeFileSync(join(dir, "apple-touch-icon.png"), png(180, 3, 105, 161));
 console.log("Generated PWA icons");

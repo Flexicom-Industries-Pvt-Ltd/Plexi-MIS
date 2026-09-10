@@ -16,7 +16,7 @@ export function SaveBar({
   nextLabel?: string;
 }) {
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-slate-200 bg-white/95 p-4 backdrop-blur">
+    <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-slate-200 bg-white/95 p-4 backdrop-blur safe-bottom-pad">
       <div className="mx-auto flex max-w-6xl flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         {error ? <p className="text-sm text-red-600">{error}</p> : <p className="text-sm text-slate-500">Calculated fields update automatically.</p>}
         <div className="flex gap-2">

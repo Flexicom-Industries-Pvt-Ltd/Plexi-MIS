@@ -151,7 +151,7 @@ export function ReviewPage({ dateKey }: { dateKey: string }) {
         </Section>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-slate-200 bg-white/95 p-4 backdrop-blur">
+      <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-slate-200 bg-white/95 p-4 backdrop-blur safe-bottom-pad">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
             <span className="text-sm text-slate-600">Status:</span>

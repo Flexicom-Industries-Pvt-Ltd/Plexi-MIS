@@ -21,7 +21,7 @@ export function SheetNav({ dateKey, current }: { dateKey: string; current: strin
           prefetch
           scroll={false}
           className={cn(
-            "rounded-xl border px-3 py-3 text-center text-sm font-semibold",
+            "rounded-xl border px-3 py-3.5 text-center text-sm font-semibold touch-manipulation min-h-[48px] flex items-center justify-center",
             current === sheet.href
               ? "border-sky-500 bg-sky-50 text-sky-800"
               : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",

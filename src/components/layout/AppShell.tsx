@@ -4,6 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BarChart3, CalendarDays, ClipboardList, LayoutDashboard, Menu, X } from "lucide-react";
 import { useState } from "react";
+import { PwaInstallPrompt } from "@/components/pwa/PwaInstallPrompt";
+import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
+import { useIsEntrySheet } from "@/hooks/useIsEntrySheet";
 import { cn } from "@/lib/utils";
 
 const nav = [
@@ -19,6 +22,7 @@ const nav = [
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const isEntrySheet = useIsEntrySheet();
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -74,7 +78,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </nav>
         )}
       </header>
-      <main className="mx-auto max-w-6xl px-4 py-4 pb-24">{children}</main>
+      <main
+        className={cn(
+          "mx-auto max-w-6xl px-4 py-4",
+          isEntrySheet ? "pb-36" : "pb-24 lg:pb-8",
+        )}
+      >
+        {children}
+      </main>
+      <MobileBottomNav />
+      <PwaInstallPrompt />
     </div>
   );
 }
