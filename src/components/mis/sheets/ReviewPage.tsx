@@ -133,7 +133,7 @@ export function ReviewPage({ dateKey }: { dateKey: string }) {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Section title="Sheet 1 - Production / Section A" icon={Layers} editHref={`/entry/${dateKey}/sheet-1`}>
+        <Section title="Sheet 1 - Production" icon={Layers} editHref={`/entry/${dateKey}/sheet-1`}>
           {s1 ? (
             <>
               <Row label="Total Production" value={`${formatNumber(s1.totalProduction)} kg`} />

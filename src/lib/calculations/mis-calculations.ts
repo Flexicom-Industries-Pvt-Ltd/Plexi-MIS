@@ -20,7 +20,7 @@ export function divide(numerator: number, denominator: number): number {
   return round2(numerator / denominator);
 }
 
-// Sheet 1 — Production / Section A
+// Sheet 1 — Production
 export type Sheet1Input = {
   productionA: number;
   productionB: number;
