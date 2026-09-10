@@ -1,7 +1,7 @@
 "use client";
 
-import { formatNumber } from "@/lib/utils";
-import { cn } from "@/lib/utils";
+import { Calculator } from "lucide-react";
+import { formatNumber, cn } from "@/lib/utils";
 
 type Props = {
   label: string;
@@ -13,14 +13,21 @@ type Props = {
 export function CalculatedField({ label, value, suffix, className }: Props) {
   return (
     <div className={cn("block", className)}>
-      <span className="mb-1 block text-xs font-medium text-slate-500">{label}</span>
+      <div className="mb-1.5 flex items-center justify-between">
+        <span className="text-xs font-semibold text-slate-600">{label}</span>
+        <span className="inline-flex items-center gap-1 rounded bg-slate-200/80 px-1.5 py-0.5 text-[10px] font-medium text-slate-600">
+          <Calculator className="h-2.5 w-2.5" />
+          <span>Auto</span>
+        </span>
+      </div>
       <div
-        className="w-full rounded-xl border border-slate-200 bg-slate-100 px-4 py-3 text-lg font-semibold text-slate-700 min-h-[52px] flex items-center"
+        className="flex min-h-[56px] w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-100/90 px-4 py-3 text-xl font-bold text-slate-800 sm:text-lg"
         aria-readonly="true"
       >
-        {formatNumber(value)}
-        {suffix ? <span className="ml-1 text-sm font-medium text-slate-500">{suffix}</span> : null}
+        <span>{formatNumber(value)}</span>
+        {suffix ? <span className="text-sm font-semibold text-slate-500">{suffix}</span> : null}
       </div>
     </div>
   );
 }
+
