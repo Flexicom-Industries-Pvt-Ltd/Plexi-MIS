@@ -24,7 +24,7 @@ export function CalculatedField({ label, value, suffix, className }: Props) {
         className="flex min-h-[56px] w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-100/90 px-4 py-3 text-xl font-bold text-slate-800 sm:text-lg"
         aria-readonly="true"
       >
-        <span>{formatNumber(value)}</span>
+        <span className="notranslate" translate="no">{formatNumber(value)}</span>
         {suffix ? <span className="text-sm font-semibold text-slate-500">{suffix}</span> : null}
       </div>
     </div>

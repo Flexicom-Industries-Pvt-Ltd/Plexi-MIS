@@ -7,6 +7,7 @@ import { useState } from "react";
 import { HiddenAdminPanel } from "@/components/admin/HiddenAdminPanel";
 import { PwaInstallPrompt } from "@/components/pwa/PwaInstallPrompt";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
+import { LanguageSelector } from "@/components/layout/LanguageSelector";
 import { useIsEntrySheet } from "@/hooks/useIsEntrySheet";
 import { cn } from "@/lib/utils";
 
@@ -36,15 +37,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-700">Plascom MIS</span>
             </Link>
           </div>
-          <button
-            type="button"
-            className="rounded-lg border border-slate-200 p-2 lg:hidden"
-            onClick={() => setOpen((v) => !v)}
-            aria-label="Toggle menu"
-          >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-          <nav className="hidden gap-1 lg:flex">
+          <div className="flex items-center gap-2">
+            <LanguageSelector />
+            <button
+              type="button"
+              className="rounded-lg border border-slate-200 p-2 lg:hidden"
+              onClick={() => setOpen((v) => !v)}
+              aria-label="Toggle menu"
+            >
+              {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            </button>
+            <nav className="hidden gap-1 lg:flex">
             {nav.map((item) => (
               <Link
                 key={item.href}
@@ -61,6 +64,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </Link>
             ))}
           </nav>
+          </div>
         </div>
         {open && (
           <nav className="border-t border-slate-200 px-2 py-2 lg:hidden">
