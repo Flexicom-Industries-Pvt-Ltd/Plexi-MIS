@@ -8,7 +8,7 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { format, parseISO } from "date-fns";
 
 export default function LoomDashboardPage() {
-  const { data, latest, loading, error } = useDashboardData();
+  const { data, selected, loading, error } = useDashboardData();
 
   const trend = data.map((d) => {
     const pp = d.sheet4.find((r) => r.material === "PP");
@@ -23,7 +23,7 @@ export default function LoomDashboardPage() {
   });
 
   const materialCompare =
-    latest?.sheet4.map((row) => ({
+    selected?.sheet4.map((row) => ({
       label: row.material,
       shiftA: row.productionPerLoomA,
       shiftB: row.productionPerLoomB,
@@ -34,7 +34,7 @@ export default function LoomDashboardPage() {
       {loading ? <p className="text-slate-500">Loading...</p> : null}
       {error ? <p className="text-red-600">{error}</p> : null}
 
-      {latest?.sheet4.map((row) => (
+      {selected?.sheet4.map((row) => (
         <div key={row.material} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
           <h2 className="mb-3 text-lg font-bold text-slate-900">{row.material}</h2>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

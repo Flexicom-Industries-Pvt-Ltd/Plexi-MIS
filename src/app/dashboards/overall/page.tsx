@@ -7,12 +7,12 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { formatNumber } from "@/lib/utils";
 
 export default function OverallDashboardPage() {
-  const { latest, loading, error } = useDashboardData();
-  const s1 = latest?.sheet1;
-  const sheet2 = latest?.sheet2 ?? [];
-  const s2Totals = latest?.sheet2Totals;
-  const s3 = latest?.sheet3;
-  const s4 = latest?.sheet4 ?? [];
+  const { selected, loading, error } = useDashboardData();
+  const s1 = selected?.sheet1;
+  const sheet2 = selected?.sheet2 ?? [];
+  const s2Totals = selected?.sheet2Totals;
+  const s3 = selected?.sheet3;
+  const s4 = selected?.sheet4 ?? [];
 
   const productionCompare = s1
     ? [{ label: "Production", shiftA: s1.productionA, shiftB: s1.productionB }]
@@ -33,7 +33,7 @@ export default function OverallDashboardPage() {
       {loading ? <p className="text-slate-500">Loading...</p> : null}
       {error ? <p className="text-red-600">{error}</p> : null}
 
-      {!latest ? (
+      {!selected ? (
         <p className="rounded-2xl border border-dashed border-slate-200 p-8 text-center text-slate-500">
           No MIS data yet. Start with today&apos;s entry.
         </p>
@@ -53,7 +53,7 @@ export default function OverallDashboardPage() {
 
           <div className="grid gap-4 lg:grid-cols-2">
             <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <h2 className="mb-3 font-bold text-slate-900">Run MIS (Latest)</h2>
+              <h2 className="mb-3 font-bold text-slate-900">Run MIS</h2>
               <div className="space-y-3">
                 {sheet2.map((row) => (
                   <div
@@ -71,7 +71,7 @@ export default function OverallDashboardPage() {
             </div>
 
             <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <h2 className="mb-3 font-bold text-slate-900">Loom Performance (Latest)</h2>
+              <h2 className="mb-3 font-bold text-slate-900">Loom Performance</h2>
               <div className="space-y-3">
                 {s4.map((row) => (
                   <div

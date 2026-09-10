@@ -8,8 +8,8 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { format, parseISO } from "date-fns";
 
 export default function PerformanceDashboardPage() {
-  const { data, latest, loading, error } = useDashboardData();
-  const s3 = latest?.sheet3;
+  const { data, selected, loading, error } = useDashboardData();
+  const s3 = selected?.sheet3;
 
   const trend = data.map((d) => ({
     date: format(parseISO(d.date), "d MMM"),

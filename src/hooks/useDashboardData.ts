@@ -1,10 +1,14 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { getCachedDashboard, setCachedDashboard } from "@/lib/mis/mis-day-cache";
 import type { MisDayData } from "@/types/mis-day";
 
 export function useDashboardData() {
+  const searchParams = useSearchParams();
+  const dateParam = searchParams.get("date");
+
   const [data, setData] = useState<MisDayData[]>(() => getCachedDashboard() ?? []);
   const [loading, setLoading] = useState(() => !getCachedDashboard());
   const [error, setError] = useState<string | null>(null);
@@ -41,5 +45,10 @@ export function useDashboardData() {
 
   const latest = data.length ? data[data.length - 1] : null;
 
-  return { data, latest, loading, error, refresh };
+  const selected = useMemo(() => {
+    if (!dateParam) return latest;
+    return data.find((day) => day.date === dateParam) ?? null;
+  }, [data, dateParam, latest]);
+
+  return { data, latest, selected, selectedDate: dateParam, loading, error, refresh };
 }

@@ -8,9 +8,9 @@ import { useDashboardData } from "@/hooks/useDashboardData";
 import { format, parseISO } from "date-fns";
 
 export default function RunDashboardPage() {
-  const { data, latest, loading, error } = useDashboardData();
-  const sheet2 = latest?.sheet2 ?? [];
-  const totals = latest?.sheet2Totals;
+  const { data, selected, loading, error } = useDashboardData();
+  const sheet2 = selected?.sheet2 ?? [];
+  const totals = selected?.sheet2Totals;
 
   const trend = data.map((d) => ({
     date: format(parseISO(d.date), "d MMM"),
