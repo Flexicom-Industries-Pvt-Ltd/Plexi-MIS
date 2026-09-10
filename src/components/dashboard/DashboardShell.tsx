@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { format, parseISO } from "date-fns";
-import { useSearchParams } from "next/navigation";
 import { useDashboardData } from "@/hooks/useDashboardData";
 
 const dashboardLinks = [
@@ -24,10 +23,8 @@ export function DashboardShell({
   current: string;
   children: React.ReactNode;
 }) {
-  const searchParams = useSearchParams();
-  const dateParam = searchParams.get("date");
-  const { selected, latest, loading, error } = useDashboardData();
-  const dateQuery = dateParam ? `?date=${dateParam}` : "";
+  const { selected, latest, selectedDate, loading, error } = useDashboardData();
+  const dateQuery = selectedDate ? `?date=${selectedDate}` : "";
 
   return (
     <div className="space-y-4">
@@ -38,13 +35,13 @@ export function DashboardShell({
           <p className="mt-2 text-sm text-slate-500">Loading dashboard data...</p>
         ) : error ? (
           <p className="mt-2 text-sm text-red-600">{error}</p>
-        ) : dateParam && !selected ? (
+        ) : selectedDate && !selected ? (
           <p className="mt-2 text-sm text-amber-700">
-            No MIS record for {format(parseISO(dateParam), "d MMM yyyy")}.
+            No MIS record for {format(parseISO(selectedDate), "d MMM yyyy")}.
           </p>
         ) : selected ? (
           <p className="mt-2 text-sm text-slate-600">
-            {dateParam ? "Viewing" : "Latest"}: {format(parseISO(selected.date), "d MMM yyyy")} ({selected.status})
+            {selectedDate ? "Viewing" : "Latest"}: {format(parseISO(selected.date), "d MMM yyyy")} ({selected.status})
           </p>
         ) : (
           <p className="mt-2 text-sm text-slate-500">No MIS records yet.</p>
