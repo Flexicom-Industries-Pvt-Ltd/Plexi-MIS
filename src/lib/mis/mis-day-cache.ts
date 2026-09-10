@@ -27,3 +27,8 @@ export function invalidateMisDay(dateKey: string): void {
   dayCache.delete(dateKey);
   dashboardCache = null;
 }
+
+export function clearAllCaches(): void {
+  dayCache.clear();
+  dashboardCache = null;
+}

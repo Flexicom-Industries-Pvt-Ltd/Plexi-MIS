@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BarChart3, CalendarDays, ClipboardList, LayoutDashboard, Menu, X } from "lucide-react";
 import { useState } from "react";
+import { HiddenAdminPanel } from "@/components/admin/HiddenAdminPanel";
 import { PwaInstallPrompt } from "@/components/pwa/PwaInstallPrompt";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { useIsEntrySheet } from "@/hooks/useIsEntrySheet";
@@ -29,22 +29,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-slate-50">
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-          <Link href="/" className="flex items-center gap-2.5">
-            <div className="flex shrink-0 items-center justify-center rounded-lg border border-slate-100 bg-white p-1 shadow-sm">
-              <Image
-                src="/icon.png"
-                alt="Plascom MIS"
-                width={36}
-                height={36}
-                className="h-9 w-9 object-contain"
-                priority
-              />
-            </div>
-            <div className="flex flex-col leading-tight">
+          <div className="flex items-center gap-2.5">
+            <HiddenAdminPanel />
+            <Link href="/" className="flex flex-col leading-tight">
               <span className="text-sm font-extrabold tracking-tight text-slate-900 sm:text-base">Flexicom</span>
               <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-700">Plascom MIS</span>
-            </div>
-          </Link>
+            </Link>
+          </div>
           <button
             type="button"
             className="rounded-lg border border-slate-200 p-2 lg:hidden"
