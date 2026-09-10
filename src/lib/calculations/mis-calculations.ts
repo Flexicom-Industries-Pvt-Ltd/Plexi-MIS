@@ -197,11 +197,17 @@ export type OverallAggregated = {
   sheet1: {
     productionA: number;
     productionB: number;
+    wastageA: number;
+    wastageB: number;
     totalProduction: number;
     totalWastage: number;
+    wastagePercentA: number;
+    wastagePercentB: number;
     wastagePercentTotal: number;
     efficiencyA: number;
     efficiencyB: number;
+    rpA: number;
+    rpB: number;
     totalRp: number;
   } | null;
   sheet2: Array<{
@@ -213,11 +219,13 @@ export type OverallAggregated = {
     gapPercent: number;
   }>;
   sheet2Totals: ReturnType<typeof aggregateSheet2>;
-  sheet3: {
-    productionAvgTotal: number;
-  } | null;
+  sheet3: (Sheet3Input & Sheet3Calculated) | null;
   sheet4: Array<{
     material: string;
+    productionA: number;
+    loomsRunA: number;
+    productionB: number;
+    loomsRunB: number;
     productionPerLoomA: number;
     productionPerLoomB: number;
   }>;
@@ -239,6 +247,10 @@ export function aggregateOverallDashboard(
     sheet3: Record<string, number> | null;
     sheet4: Array<{
       material: string;
+      productionA: number;
+      loomsRunA: number;
+      productionB: number;
+      loomsRunB: number;
       productionPerLoomA: number;
       productionPerLoomB: number;
     }>;
@@ -255,18 +267,26 @@ export function aggregateOverallDashboard(
         const productionB = round2(sheet1Days.reduce((sum, day) => sum + toNum(day.sheet1!.productionB), 0));
         const wastageA = round2(sheet1Days.reduce((sum, day) => sum + toNum(day.sheet1!.wastageA), 0));
         const wastageB = round2(sheet1Days.reduce((sum, day) => sum + toNum(day.sheet1!.wastageB), 0));
+        const rpA = round2(sheet1Days.reduce((sum, day) => sum + toNum(day.sheet1!.rpA), 0));
+        const rpB = round2(sheet1Days.reduce((sum, day) => sum + toNum(day.sheet1!.rpB), 0));
         const totalProduction = round2(productionA + productionB);
         const totalWastage = round2(wastageA + wastageB);
 
         return {
           productionA,
           productionB,
+          wastageA,
+          wastageB,
           totalProduction,
           totalWastage,
+          wastagePercentA: percent(wastageA, productionA),
+          wastagePercentB: percent(wastageB, productionB),
           wastagePercentTotal: percent(totalWastage, totalProduction),
           efficiencyA: average(sheet1Days.map((day) => toNum(day.sheet1!.efficiencyA))),
           efficiencyB: average(sheet1Days.map((day) => toNum(day.sheet1!.efficiencyB))),
-          totalRp: round2(sheet1Days.reduce((sum, day) => sum + toNum(day.sheet1!.totalRp), 0)),
+          rpA,
+          rpB,
+          totalRp: round2(rpA + rpB),
         };
       })()
     : null;
@@ -292,28 +312,49 @@ export function aggregateOverallDashboard(
 
   const sheet3Days = sorted.filter((day) => day.sheet3);
   const sheet3 = sheet3Days.length
-    ? {
-        productionAvgTotal: average(sheet3Days.map((day) => toNum(day.sheet3!.productionAvgTotal))),
-      }
+    ? (() => {
+        const inputs: Sheet3Input = {
+          productionA: round2(sheet3Days.reduce((sum, day) => sum + toNum(day.sheet3!.productionA), 0)),
+          productionB: round2(sheet3Days.reduce((sum, day) => sum + toNum(day.sheet3!.productionB), 0)),
+          loomRunA: round2(sheet3Days.reduce((sum, day) => sum + toNum(day.sheet3!.loomRunA), 0)),
+          loomRunB: round2(sheet3Days.reduce((sum, day) => sum + toNum(day.sheet3!.loomRunB), 0)),
+          wastageA: round2(sheet3Days.reduce((sum, day) => sum + toNum(day.sheet3!.wastageA), 0)),
+          wastageB: round2(sheet3Days.reduce((sum, day) => sum + toNum(day.sheet3!.wastageB), 0)),
+        };
+        return { ...inputs, ...calculateSheet3(inputs) };
+      })()
     : null;
 
-  const sheet4 = LOOM_MATERIALS.map((material) => {
-    const perLoomA: number[] = [];
-    const perLoomB: number[] = [];
-
-    for (const day of sorted) {
-      const row = day.sheet4.find((entry) => entry.material === material);
-      if (row) {
-        perLoomA.push(toNum(row.productionPerLoomA));
-        perLoomB.push(toNum(row.productionPerLoomB));
-      }
+  const loomByMaterial = new Map<
+    string,
+    { productionA: number; loomsRunA: number; productionB: number; loomsRunB: number }
+  >();
+  for (const day of sorted) {
+    for (const row of day.sheet4) {
+      const current = loomByMaterial.get(row.material) ?? {
+        productionA: 0,
+        loomsRunA: 0,
+        productionB: 0,
+        loomsRunB: 0,
+      };
+      loomByMaterial.set(row.material, {
+        productionA: round2(current.productionA + toNum(row.productionA)),
+        loomsRunA: round2(current.loomsRunA + toNum(row.loomsRunA)),
+        productionB: round2(current.productionB + toNum(row.productionB)),
+        loomsRunB: round2(current.loomsRunB + toNum(row.loomsRunB)),
+      });
     }
+  }
 
-    return {
-      material,
-      productionPerLoomA: average(perLoomA),
-      productionPerLoomB: average(perLoomB),
+  const sheet4 = LOOM_MATERIALS.map((material) => {
+    const inputs = loomByMaterial.get(material) ?? {
+      productionA: 0,
+      loomsRunA: 0,
+      productionB: 0,
+      loomsRunB: 0,
     };
+    const calculated = calculateSheet4Material(inputs);
+    return { material, ...inputs, ...calculated };
   });
 
   return {

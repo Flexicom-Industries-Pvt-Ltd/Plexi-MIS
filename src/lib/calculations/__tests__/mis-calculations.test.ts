@@ -172,6 +172,8 @@ describe("aggregateOverallDashboard", () => {
           wastageB: 5,
           efficiencyA: 90,
           efficiencyB: 80,
+          rpA: 3,
+          rpB: 2,
           totalRp: 5,
           totalProduction: 150,
           totalWastage: 15,
@@ -187,8 +189,29 @@ describe("aggregateOverallDashboard", () => {
             gapPercent: 25,
           },
         ],
-        sheet3: { productionAvgTotal: 100 },
-        sheet4: [{ material: "PP", productionPerLoomA: 10, productionPerLoomB: 8 }],
+        sheet3: {
+          productionA: 100,
+          productionB: 50,
+          loomRunA: 10,
+          loomRunB: 5,
+          wastageA: 5,
+          wastageB: 2,
+          totalProduction: 150,
+          totalLoomRun: 15,
+          totalWastage: 7,
+          productionAvgTotal: 10,
+        },
+        sheet4: [
+          {
+            material: "PP",
+            productionA: 100,
+            loomsRunA: 10,
+            productionB: 40,
+            loomsRunB: 5,
+            productionPerLoomA: 10,
+            productionPerLoomB: 8,
+          },
+        ],
       },
       {
         date: "2026-09-10",
@@ -199,6 +222,8 @@ describe("aggregateOverallDashboard", () => {
           wastageB: 10,
           efficiencyA: 92,
           efficiencyB: 84,
+          rpA: 10,
+          rpB: 5,
           totalRp: 15,
           totalProduction: 300,
           totalWastage: 30,
@@ -214,8 +239,29 @@ describe("aggregateOverallDashboard", () => {
             gapPercent: 25,
           },
         ],
-        sheet3: { productionAvgTotal: 120 },
-        sheet4: [{ material: "PP", productionPerLoomA: 12, productionPerLoomB: 9 }],
+        sheet3: {
+          productionA: 200,
+          productionB: 100,
+          loomRunA: 20,
+          loomRunB: 10,
+          wastageA: 10,
+          wastageB: 4,
+          totalProduction: 300,
+          totalLoomRun: 30,
+          totalWastage: 14,
+          productionAvgTotal: 10,
+        },
+        sheet4: [
+          {
+            material: "PP",
+            productionA: 200,
+            loomsRunA: 20,
+            productionB: 90,
+            loomsRunB: 10,
+            productionPerLoomA: 10,
+            productionPerLoomB: 9,
+          },
+        ],
       },
     ]);
 
@@ -226,7 +272,9 @@ describe("aggregateOverallDashboard", () => {
     expect(result?.sheet1?.efficiencyA).toBe(91);
     expect(result?.sheet2Totals.totalRun).toBe(45);
     expect(result?.sheet2Totals.totalRunPlanned).toBe(60);
-    expect(result?.sheet3?.productionAvgTotal).toBe(110);
-    expect(result?.sheet4[0].productionPerLoomA).toBe(11);
+    expect(result?.sheet3?.totalProduction).toBe(450);
+    expect(result?.sheet3?.productionAvgTotal).toBe(10);
+    expect(result?.sheet4[0].productionA).toBe(300);
+    expect(result?.sheet4[0].productionPerLoomA).toBe(10);
   });
 });

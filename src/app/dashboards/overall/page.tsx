@@ -1,36 +1,19 @@
 "use client";
 
-import { format, parseISO } from "date-fns";
-import { useMemo } from "react";
 import { KpiCard } from "@/components/mis/KpiCard";
 import { DashboardShell } from "@/components/dashboard/DashboardShell";
 import { ShiftCompareChart } from "@/components/dashboard/ShiftCompareChart";
-import { useDashboardData } from "@/hooks/useDashboardData";
-import { aggregateOverallDashboard } from "@/lib/calculations/mis-calculations";
+import { useCumulativeDashboard } from "@/hooks/useCumulativeDashboard";
 import { formatNumber } from "@/lib/utils";
 
 export default function OverallDashboardPage() {
-  const { data, selectedDate, loading, error } = useDashboardData();
+  const { cumulative, periodSummary, loading, error, hasData } = useCumulativeDashboard();
 
-  const daysForOverall = useMemo(() => {
-    const sorted = [...data].sort((a, b) => a.date.localeCompare(b.date));
-    if (!selectedDate) return sorted;
-    return sorted.filter((day) => day.date <= selectedDate);
-  }, [data, selectedDate]);
-
-  const overall = useMemo(() => aggregateOverallDashboard(daysForOverall), [daysForOverall]);
-
-  const periodSummary = overall
-    ? selectedDate
-      ? `Cumulative through ${format(parseISO(overall.toDate), "d MMM yyyy")} (${overall.dayCount} day${overall.dayCount === 1 ? "" : "s"})`
-      : `Cumulative across all days (${overall.dayCount} day${overall.dayCount === 1 ? "" : "s"}, ${format(parseISO(overall.fromDate), "d MMM")} – ${format(parseISO(overall.toDate), "d MMM yyyy")})`
-    : undefined;
-
-  const s1 = overall?.sheet1;
-  const sheet2 = overall?.sheet2 ?? [];
-  const s2Totals = overall?.sheet2Totals;
-  const s3 = overall?.sheet3;
-  const s4 = overall?.sheet4 ?? [];
+  const s1 = cumulative?.sheet1;
+  const sheet2 = cumulative?.sheet2 ?? [];
+  const s2Totals = cumulative?.sheet2Totals;
+  const s3 = cumulative?.sheet3;
+  const s4 = cumulative?.sheet4 ?? [];
 
   const productionCompare = s1
     ? [{ label: "Production", shiftA: s1.productionA, shiftB: s1.productionB }]
@@ -52,7 +35,7 @@ export default function OverallDashboardPage() {
       {loading ? <p className="text-slate-500">Loading...</p> : null}
       {error ? <p className="text-red-600">{error}</p> : null}
 
-      {!overall ? (
+      {!hasData ? (
         <p className="rounded-2xl border border-dashed border-slate-200 p-8 text-center text-slate-500">
           No MIS data yet. Start with today&apos;s entry.
         </p>
@@ -67,7 +50,7 @@ export default function OverallDashboardPage() {
             <KpiCard label="Actual Run" value={s2Totals?.totalRun ?? 0} sub="Sheet 2 (all materials, all days)" />
             <KpiCard label="Planned Run" value={s2Totals?.totalRunPlanned ?? 0} sub="Sheet 2" />
             <KpiCard label="Gap %" value={s2Totals?.gapPercent ?? 0} suffix="%" sub="Sheet 2" />
-            <KpiCard label="Production Average" value={s3?.productionAvgTotal ?? 0} sub="Sheet 3 (daily average)" />
+            <KpiCard label="Production Average" value={s3?.productionAvgTotal ?? 0} sub="Sheet 3" />
           </div>
 
           <div className="grid gap-4 lg:grid-cols-2">
@@ -90,7 +73,7 @@ export default function OverallDashboardPage() {
             </div>
 
             <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <h2 className="mb-3 font-bold text-slate-900">Loom Performance (average)</h2>
+              <h2 className="mb-3 font-bold text-slate-900">Loom Performance (cumulative)</h2>
               <div className="space-y-3">
                 {s4.map((row) => (
                   <div
