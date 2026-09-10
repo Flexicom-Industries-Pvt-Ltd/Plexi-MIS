@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 import { useMisDay } from "@/contexts/MisDayContext";
 
 const sheets = [
-  { n: 1, label: "Production", href: "sheet-1", sub: "Section A" },
+  { n: 1, label: "Production", href: "sheet-1", sub: "Shift Wise" },
   { n: 2, label: "Run MIS", href: "sheet-2", sub: "5 Materials" },
   { n: 3, label: "Performance", href: "sheet-3", sub: "Averages" },
   { n: 4, label: "Loom", href: "sheet-4", sub: "Fabric Wise" },

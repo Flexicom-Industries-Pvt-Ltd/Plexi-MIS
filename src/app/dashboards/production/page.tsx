@@ -28,7 +28,7 @@ export default function ProductionDashboardPage() {
   return (
     <DashboardShell
       title="Production Dashboard"
-      subtitle="Sheet 1 - Production / Section A (cumulative totals)"
+      subtitle="Sheet 1 - Production (cumulative totals)"
       current="/dashboards/production"
       periodSummary={periodSummary}
     >

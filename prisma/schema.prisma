@@ -41,7 +41,7 @@ model MisDay {
   loomMaterials         LoomMaterialRow[]
 }
 
-/// Sheet 1 — Production / Section A
+/// Sheet 1 — Production
 model ProductionSectionA {
   id       String @id @default(cuid())
   misDayId String @unique

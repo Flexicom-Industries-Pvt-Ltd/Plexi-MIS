@@ -9,7 +9,7 @@ import {
   percent,
 } from "../mis-calculations";
 
-describe("Sheet 1 - Production / Section A", () => {
+describe("Sheet 1 - Production", () => {
   it("calculates totals and wastage percentages", () => {
     const result = calculateSheet1({
       productionA: 1000,
