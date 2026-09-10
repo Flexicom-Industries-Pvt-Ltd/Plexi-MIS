@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Share, X } from "lucide-react";
+import { X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useIsEntrySheet } from "@/hooks/useIsEntrySheet";
 import { cn } from "@/lib/utils";
