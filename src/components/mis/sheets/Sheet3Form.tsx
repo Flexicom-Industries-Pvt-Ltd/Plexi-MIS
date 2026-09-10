@@ -7,6 +7,7 @@ import { NumericInput } from "../NumericInput";
 import { EntryHeader } from "../EntryHeader";
 import { SaveBar } from "../SaveBar";
 import { SheetNav } from "../SheetNav";
+import { EntrySkeleton } from "../EntrySkeleton";
 import { useMisDay } from "@/hooks/useMisDay";
 
 export function Sheet3Form({ dateKey }: { dateKey: string }) {
@@ -75,8 +76,8 @@ export function Sheet3Form({ dateKey }: { dateKey: string }) {
     }
   };
 
-  if (loading) return <p className="text-slate-500">Loading...</p>;
-  if (loadError || !data) return <p className="text-red-600">{loadError}</p>;
+  if (!data && loading) return <EntrySkeleton />;
+  if (!data) return <p className="text-red-600">{loadError ?? "Could not load data."}</p>;
 
   return (
     <div className="space-y-4">

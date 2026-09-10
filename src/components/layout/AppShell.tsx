@@ -40,6 +40,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
+                prefetch
                 className={cn(
                   "rounded-lg px-3 py-2 text-sm font-medium",
                   pathname.startsWith(item.href)
@@ -58,6 +59,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
+                prefetch
                 onClick={() => setOpen(false)}
                 className={cn(
                   "block rounded-lg px-3 py-3 text-sm font-medium",

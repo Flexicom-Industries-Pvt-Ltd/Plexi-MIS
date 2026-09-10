@@ -7,6 +7,7 @@ import { NumericInput } from "../NumericInput";
 import { EntryHeader } from "../EntryHeader";
 import { SaveBar } from "../SaveBar";
 import { SheetNav } from "../SheetNav";
+import { EntrySkeleton } from "../EntrySkeleton";
 import { useMisDay } from "@/hooks/useMisDay";
 
 const fields = [
@@ -18,16 +19,16 @@ const fields = [
 
 export function Sheet1Form({ dateKey }: { dateKey: string }) {
   const { data, loading, error: loadError, setData } = useMisDay(dateKey);
-  const [form, setForm] = useState({
-    productionA: "0",
-    productionB: "0",
-    wastageA: "0",
-    wastageB: "0",
-    efficiencyA: "0",
-    efficiencyB: "0",
-    rpA: "0",
-    rpB: "0",
-  });
+  const [form, setForm] = useState(() => ({
+    productionA: String(data?.sheet1?.productionA ?? 0),
+    productionB: String(data?.sheet1?.productionB ?? 0),
+    wastageA: String(data?.sheet1?.wastageA ?? 0),
+    wastageB: String(data?.sheet1?.wastageB ?? 0),
+    efficiencyA: String(data?.sheet1?.efficiencyA ?? 0),
+    efficiencyB: String(data?.sheet1?.efficiencyB ?? 0),
+    rpA: String(data?.sheet1?.rpA ?? 0),
+    rpB: String(data?.sheet1?.rpB ?? 0),
+  }));
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const readonly = data?.status === "LOCKED";
@@ -90,8 +91,8 @@ export function Sheet1Form({ dateKey }: { dateKey: string }) {
     }
   };
 
-  if (loading) return <p className="text-slate-500">Loading...</p>;
-  if (loadError || !data) return <p className="text-red-600">{loadError}</p>;
+  if (!data && loading) return <EntrySkeleton />;
+  if (!data) return <p className="text-red-600">{loadError ?? "Could not load data."}</p>;
 
   return (
     <div className="space-y-4">

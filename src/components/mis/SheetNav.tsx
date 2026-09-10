@@ -18,6 +18,8 @@ export function SheetNav({ dateKey, current }: { dateKey: string; current: strin
         <Link
           key={sheet.href}
           href={`/entry/${dateKey}/${sheet.href}`}
+          prefetch
+          scroll={false}
           className={cn(
             "rounded-xl border px-3 py-3 text-center text-sm font-semibold",
             current === sheet.href

@@ -6,6 +6,7 @@ import { formatNumber } from "@/lib/utils";
 import { EntryHeader } from "../EntryHeader";
 import { SheetNav } from "../SheetNav";
 import { StatusBadge } from "../StatusBadge";
+import { EntrySkeleton } from "../EntrySkeleton";
 import { useMisDay } from "@/hooks/useMisDay";
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
@@ -62,8 +63,8 @@ export function ReviewPage({ dateKey }: { dateKey: string }) {
     }
   };
 
-  if (loading) return <p className="text-slate-500">Loading...</p>;
-  if (loadError || !data) return <p className="text-red-600">{loadError}</p>;
+  if (!data && loading) return <EntrySkeleton />;
+  if (!data) return <p className="text-red-600">{loadError ?? "Could not load data."}</p>;
 
   const s1 = data.sheet1;
   const s3 = data.sheet3;

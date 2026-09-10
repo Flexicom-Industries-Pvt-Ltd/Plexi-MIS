@@ -1,29 +1,42 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import type { MisDayData } from "./useMisDay";
+import { getCachedDashboard, setCachedDashboard } from "@/lib/mis/mis-day-cache";
+import type { MisDayData } from "@/types/mis-day";
 
 export function useDashboardData() {
-  const [data, setData] = useState<MisDayData[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<MisDayData[]>(() => getCachedDashboard() ?? []);
+  const [loading, setLoading] = useState(() => !getCachedDashboard());
   const [error, setError] = useState<string | null>(null);
 
-  const refresh = useCallback(async () => {
-    setLoading(true);
+  const refresh = useCallback(async (silent = false) => {
+    const cached = getCachedDashboard();
+    if (!silent && !cached) setLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/mis/dashboard");
+      const res = await fetch("/api/mis/dashboard", { cache: "no-store" });
       if (!res.ok) throw new Error("Failed to load");
-      setData(await res.json());
+      const json = (await res.json()) as MisDayData[];
+      setCachedDashboard(json);
+      setData(json);
     } catch {
-      setError("Could not load dashboard data.");
+      if (!getCachedDashboard()) {
+        setError("Could not load dashboard data.");
+      }
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    refresh();
+    const cached = getCachedDashboard();
+    if (cached) {
+      setData(cached);
+      setLoading(false);
+      refresh(true);
+    } else {
+      refresh(false);
+    }
   }, [refresh]);
 
   const latest = data.length ? data[data.length - 1] : null;

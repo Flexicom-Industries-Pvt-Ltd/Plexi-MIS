@@ -30,7 +30,7 @@ export function DashboardShell({
       <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         <h1 className="text-xl font-bold text-slate-900">{title}</h1>
         {subtitle ? <p className="text-sm text-slate-500">{subtitle}</p> : null}
-        {loading ? (
+        {loading && !latest ? (
           <p className="mt-2 text-sm text-slate-500">Loading latest data...</p>
         ) : error ? (
           <p className="mt-2 text-sm text-red-600">{error}</p>

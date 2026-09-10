@@ -59,24 +59,33 @@ async function ensureMisDay(dateKey: string) {
       include: MIS_INCLUDE,
     });
   } else {
-    for (const material of RUN_MATERIALS) {
-      await db.runMaterialRow.upsert({
-        where: { misDayId_material: { misDayId: misDay.id, material: material as RunMaterial } },
-        create: { misDayId: misDay.id, material: material as RunMaterial },
-        update: {},
+    const needsRun = misDay.runMaterials.length < RUN_MATERIALS.length;
+    const needsLoom = misDay.loomMaterials.length < LOOM_MATERIALS.length;
+
+    if (needsRun || needsLoom) {
+      if (needsRun) {
+        for (const material of RUN_MATERIALS) {
+          await db.runMaterialRow.upsert({
+            where: { misDayId_material: { misDayId: misDay.id, material: material as RunMaterial } },
+            create: { misDayId: misDay.id, material: material as RunMaterial },
+            update: {},
+          });
+        }
+      }
+      if (needsLoom) {
+        for (const material of LOOM_MATERIALS) {
+          await db.loomMaterialRow.upsert({
+            where: { misDayId_material: { misDayId: misDay.id, material: material as LoomMaterial } },
+            create: { misDayId: misDay.id, material: material as LoomMaterial },
+            update: {},
+          });
+        }
+      }
+      misDay = await db.misDay.findUniqueOrThrow({
+        where: { id: misDay.id },
+        include: MIS_INCLUDE,
       });
     }
-    for (const material of LOOM_MATERIALS) {
-      await db.loomMaterialRow.upsert({
-        where: { misDayId_material: { misDayId: misDay.id, material: material as LoomMaterial } },
-        create: { misDayId: misDay.id, material: material as LoomMaterial },
-        update: {},
-      });
-    }
-    misDay = await db.misDay.findUniqueOrThrow({
-      where: { id: misDay.id },
-      include: MIS_INCLUDE,
-    });
   }
 
   return misDay;
