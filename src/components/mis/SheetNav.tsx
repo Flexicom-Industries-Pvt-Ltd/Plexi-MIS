@@ -78,6 +78,7 @@ export function SheetNav({ dateKey, current }: { dateKey: string; current: strin
         {sheets.map((sheet) => {
           const active = current === sheet.href;
           const completed = isCompleted(sheet.href);
+          const isLast = sheet.href === "review";
 
           return (
             <Link
@@ -87,6 +88,7 @@ export function SheetNav({ dateKey, current }: { dateKey: string; current: strin
               scroll={false}
               className={cn(
                 "group relative flex min-h-[52px] items-center gap-2 rounded-xl border p-2.5 text-left transition-all duration-150 touch-manipulation",
+                isLast ? "col-span-2 sm:col-span-1" : "",
                 active
                   ? "border-sky-600 bg-sky-50/80 shadow-sm ring-2 ring-sky-500/20"
                   : completed
@@ -130,4 +132,5 @@ export function SheetNav({ dateKey, current }: { dateKey: string; current: strin
     </div>
   );
 }
+
 

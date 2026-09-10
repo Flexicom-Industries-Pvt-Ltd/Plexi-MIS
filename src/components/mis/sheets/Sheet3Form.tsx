@@ -165,35 +165,16 @@ export function Sheet3Form({ dateKey }: { dateKey: string }) {
                   <span>{row.label}</span>
                 </div>
 
-                <NumericInput
-                  label="Shift A (Day)"
-                  unit={row.unit}
-                  value={form[`${row.key}A` as keyof typeof form]}
-                  disabled={readonly}
-                  onChange={(v) => setForm((f) => ({ ...f, [`${row.key}A`]: v } as typeof f))}
-                  className="md:hidden"
-                />
-                <NumericInput
-                  label="Shift B (Night)"
-                  unit={row.unit}
-                  value={form[`${row.key}B` as keyof typeof form]}
-                  disabled={readonly}
-                  onChange={(v) => setForm((f) => ({ ...f, [`${row.key}B`]: v } as typeof f))}
-                  className="md:hidden"
-                />
-
-                <div className="hidden md:block">
+                <div className="grid grid-cols-2 gap-2.5 md:contents">
                   <NumericInput
-                    label=""
+                    label="Shift A (Day)"
                     unit={row.unit}
                     value={form[`${row.key}A` as keyof typeof form]}
                     disabled={readonly}
                     onChange={(v) => setForm((f) => ({ ...f, [`${row.key}A`]: v } as typeof f))}
                   />
-                </div>
-                <div className="hidden md:block">
                   <NumericInput
-                    label=""
+                    label="Shift B (Night)"
                     unit={row.unit}
                     value={form[`${row.key}B` as keyof typeof form]}
                     disabled={readonly}

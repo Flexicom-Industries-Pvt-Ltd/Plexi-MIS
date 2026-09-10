@@ -141,9 +141,27 @@ export function Sheet2Form({ dateKey }: { dateKey: string }) {
         </p>
       </div>
 
+      {/* Material Quick-Jump Chips (Mobile) */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 md:hidden">
+        <span className="text-[11px] font-bold text-slate-500 shrink-0">Jump:</span>
+        {RUN_MATERIALS.map((m) => (
+          <a
+            key={m}
+            href={`#material-${m}`}
+            className="flex min-h-[38px] items-center justify-center rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-700 shadow-sm transition hover:border-sky-400 hover:text-sky-800 active:scale-95"
+          >
+            {m}
+          </a>
+        ))}
+      </div>
+
       {/* Material Sections */}
       {RUN_MATERIALS.map((material) => (
-        <div key={material} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div
+          key={material}
+          id={`material-${material}`}
+          className="scroll-mt-20 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
+        >
           <div className="flex items-center justify-between border-b border-slate-200 bg-slate-50 px-4 py-3">
             <div className="flex items-center gap-2">
               <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-sky-700 text-xs font-black text-white">
@@ -170,49 +188,17 @@ export function Sheet2Form({ dateKey }: { dateKey: string }) {
 
           <div className="p-4">
             <div className="grid gap-3 md:grid-cols-5 md:items-end">
-              <NumericInput
-                label="Shift A (Day)"
-                value={form[material].shiftA}
-                disabled={readonly}
-                onChange={(v) =>
-                  setForm((f) => ({ ...f, [material]: { ...f[material], shiftA: v } }))
-                }
-                className="md:hidden"
-              />
-              <NumericInput
-                label="Shift B (Night)"
-                value={form[material].shiftB}
-                disabled={readonly}
-                onChange={(v) =>
-                  setForm((f) => ({ ...f, [material]: { ...f[material], shiftB: v } }))
-                }
-                className="md:hidden"
-              />
-              <CalculatedField label="Total Run" value={calc[material].totalRun} className="md:hidden" />
-              <NumericInput
-                label="Planned Run"
-                value={form[material].totalRunPlanned}
-                disabled={readonly}
-                onChange={(v) =>
-                  setForm((f) => ({ ...f, [material]: { ...f[material], totalRunPlanned: v } }))
-                }
-                className="md:hidden"
-              />
-              <CalculatedField label="Gap %" value={calc[material].gapPercent} suffix="%" className="md:hidden" />
-
-              <div className="hidden md:block">
+              <div className="grid grid-cols-2 gap-2.5 md:contents">
                 <NumericInput
-                  label=""
+                  label="Shift A (Day)"
                   value={form[material].shiftA}
                   disabled={readonly}
                   onChange={(v) =>
                     setForm((f) => ({ ...f, [material]: { ...f[material], shiftA: v } }))
                   }
                 />
-              </div>
-              <div className="hidden md:block">
                 <NumericInput
-                  label=""
+                  label="Shift B (Night)"
                   value={form[material].shiftB}
                   disabled={readonly}
                   onChange={(v) =>
@@ -220,26 +206,24 @@ export function Sheet2Form({ dateKey }: { dateKey: string }) {
                   }
                 />
               </div>
-              <div className="hidden md:block">
-                <CalculatedField label="" value={calc[material].totalRun} />
-              </div>
-              <div className="hidden md:block">
+
+              <div className="grid grid-cols-3 gap-2 md:contents">
+                <CalculatedField label="Total Run" value={calc[material].totalRun} />
                 <NumericInput
-                  label=""
+                  label="Planned Run"
                   value={form[material].totalRunPlanned}
                   disabled={readonly}
                   onChange={(v) =>
                     setForm((f) => ({ ...f, [material]: { ...f[material], totalRunPlanned: v } }))
                   }
                 />
-              </div>
-              <div className="hidden md:block">
-                <CalculatedField label="" value={calc[material].gapPercent} suffix="%" />
+                <CalculatedField label="Gap %" value={calc[material].gapPercent} suffix="%" />
               </div>
             </div>
           </div>
         </div>
       ))}
+
 
       {/* Aggregate Totals Summary */}
       <div className="rounded-2xl border border-sky-200 bg-sky-50/40 p-4 shadow-sm">
