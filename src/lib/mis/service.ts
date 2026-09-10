@@ -211,14 +211,11 @@ export async function lockMisDay(dateKey: string) {
   });
 }
 
-export async function getDashboardData(limit = 30) {
-  const days = await db.misDay.findMany({
-    orderBy: { date: "desc" },
-    take: limit,
+export async function getDashboardData() {
+  return db.misDay.findMany({
+    orderBy: { date: "asc" },
     include: MIS_INCLUDE,
   });
-
-  return days.reverse();
 }
 
 export function serializeMisDay(misDay: Awaited<ReturnType<typeof getMisDay>>) {

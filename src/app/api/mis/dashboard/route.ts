@@ -5,7 +5,7 @@ export const dynamic = "force-dynamic";
 
 export async function GET() {
   try {
-    const days = await getDashboardData(30);
+    const days = await getDashboardData();
     return NextResponse.json(days.map(serializeMisDay));
   } catch (error) {
     console.error(error);

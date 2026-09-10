@@ -16,11 +16,13 @@ export function DashboardShell({
   title,
   subtitle,
   current,
+  periodSummary,
   children,
 }: {
   title: string;
   subtitle?: string;
   current: string;
+  periodSummary?: string;
   children: React.ReactNode;
 }) {
   const { selected, latest, selectedDate, loading, error } = useDashboardData();
@@ -31,7 +33,9 @@ export function DashboardShell({
       <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         <h1 className="text-xl font-bold text-slate-900">{title}</h1>
         {subtitle ? <p className="text-sm text-slate-500">{subtitle}</p> : null}
-        {loading && !selected && !latest ? (
+        {periodSummary ? (
+          <p className="mt-2 text-sm text-slate-600">{periodSummary}</p>
+        ) : loading && !selected && !latest ? (
           <p className="mt-2 text-sm text-slate-500">Loading dashboard data...</p>
         ) : error ? (
           <p className="mt-2 text-sm text-red-600">{error}</p>

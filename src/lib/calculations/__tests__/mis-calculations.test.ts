@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  aggregateOverallDashboard,
   aggregateSheet2,
   calculateSheet1,
   calculateSheet2Material,
@@ -156,5 +157,76 @@ describe("Sheet 4 - Loom Performance", () => {
 describe("percent helper", () => {
   it("supports decimals", () => {
     expect(percent(1.5, 10)).toBe(15);
+  });
+});
+
+describe("aggregateOverallDashboard", () => {
+  it("sums production and run metrics across days", () => {
+    const result = aggregateOverallDashboard([
+      {
+        date: "2026-09-09",
+        sheet1: {
+          productionA: 100,
+          productionB: 50,
+          wastageA: 10,
+          wastageB: 5,
+          efficiencyA: 90,
+          efficiencyB: 80,
+          totalRp: 5,
+          totalProduction: 150,
+          totalWastage: 15,
+          wastagePercentTotal: 10,
+        },
+        sheet2: [
+          {
+            material: "PP",
+            shiftA: 10,
+            shiftB: 5,
+            totalRunPlanned: 20,
+            totalRun: 15,
+            gapPercent: 25,
+          },
+        ],
+        sheet3: { productionAvgTotal: 100 },
+        sheet4: [{ material: "PP", productionPerLoomA: 10, productionPerLoomB: 8 }],
+      },
+      {
+        date: "2026-09-10",
+        sheet1: {
+          productionA: 200,
+          productionB: 100,
+          wastageA: 20,
+          wastageB: 10,
+          efficiencyA: 92,
+          efficiencyB: 84,
+          totalRp: 15,
+          totalProduction: 300,
+          totalWastage: 30,
+          wastagePercentTotal: 10,
+        },
+        sheet2: [
+          {
+            material: "PP",
+            shiftA: 20,
+            shiftB: 10,
+            totalRunPlanned: 40,
+            totalRun: 30,
+            gapPercent: 25,
+          },
+        ],
+        sheet3: { productionAvgTotal: 120 },
+        sheet4: [{ material: "PP", productionPerLoomA: 12, productionPerLoomB: 9 }],
+      },
+    ]);
+
+    expect(result?.dayCount).toBe(2);
+    expect(result?.sheet1?.totalProduction).toBe(450);
+    expect(result?.sheet1?.totalWastage).toBe(45);
+    expect(result?.sheet1?.totalRp).toBe(20);
+    expect(result?.sheet1?.efficiencyA).toBe(91);
+    expect(result?.sheet2Totals.totalRun).toBe(45);
+    expect(result?.sheet2Totals.totalRunPlanned).toBe(60);
+    expect(result?.sheet3?.productionAvgTotal).toBe(110);
+    expect(result?.sheet4[0].productionPerLoomA).toBe(11);
   });
 });
