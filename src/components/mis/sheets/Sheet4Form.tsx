@@ -169,24 +169,26 @@ export function Sheet4Form({ dateKey }: { dateKey: string }) {
                 </div>
                 <span className="text-[11px] font-medium text-amber-700">Material: {material}</span>
               </div>
-              <NumericInput
-                label="Production"
-                unit="meters/kg"
-                value={form[material].productionA}
-                disabled={readonly}
-                onChange={(v) =>
-                  setForm((f) => ({ ...f, [material]: { ...f[material], productionA: v } }))
-                }
-              />
-              <NumericInput
-                label="Looms Run"
-                unit="looms"
-                value={form[material].loomsRunA}
-                disabled={readonly}
-                onChange={(v) =>
-                  setForm((f) => ({ ...f, [material]: { ...f[material], loomsRunA: v } }))
-                }
-              />
+              <div className="grid grid-cols-2 gap-2.5">
+                <NumericInput
+                  label="Production"
+                  unit="meters/kg"
+                  value={form[material].productionA}
+                  disabled={readonly}
+                  onChange={(v) =>
+                    setForm((f) => ({ ...f, [material]: { ...f[material], productionA: v } }))
+                  }
+                />
+                <NumericInput
+                  label="Looms Run"
+                  unit="looms"
+                  value={form[material].loomsRunA}
+                  disabled={readonly}
+                  onChange={(v) =>
+                    setForm((f) => ({ ...f, [material]: { ...f[material], loomsRunA: v } }))
+                  }
+                />
+              </div>
               <CalculatedField
                 label="Production per Loom"
                 value={calc[material].productionPerLoomA}
@@ -203,24 +205,26 @@ export function Sheet4Form({ dateKey }: { dateKey: string }) {
                 </div>
                 <span className="text-[11px] font-medium text-indigo-700">Material: {material}</span>
               </div>
-              <NumericInput
-                label="Production"
-                unit="meters/kg"
-                value={form[material].productionB}
-                disabled={readonly}
-                onChange={(v) =>
-                  setForm((f) => ({ ...f, [material]: { ...f[material], productionB: v } }))
-                }
-              />
-              <NumericInput
-                label="Looms Run"
-                unit="looms"
-                value={form[material].loomsRunB}
-                disabled={readonly}
-                onChange={(v) =>
-                  setForm((f) => ({ ...f, [material]: { ...f[material], loomsRunB: v } }))
-                }
-              />
+              <div className="grid grid-cols-2 gap-2.5">
+                <NumericInput
+                  label="Production"
+                  unit="meters/kg"
+                  value={form[material].productionB}
+                  disabled={readonly}
+                  onChange={(v) =>
+                    setForm((f) => ({ ...f, [material]: { ...f[material], productionB: v } }))
+                  }
+                />
+                <NumericInput
+                  label="Looms Run"
+                  unit="looms"
+                  value={form[material].loomsRunB}
+                  disabled={readonly}
+                  onChange={(v) =>
+                    setForm((f) => ({ ...f, [material]: { ...f[material], loomsRunB: v } }))
+                  }
+                />
+              </div>
               <CalculatedField
                 label="Production per Loom"
                 value={calc[material].productionPerLoomB}
