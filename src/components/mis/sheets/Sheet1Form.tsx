@@ -1,6 +1,16 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import {
+  Activity,
+  AlertTriangle,
+  Info,
+  Layers,
+  Moon,
+  RotateCcw,
+  Sun,
+  Trash2,
+} from "lucide-react";
 import { calculateSheet1 } from "@/lib/calculations/mis-calculations";
 import { CalculatedField } from "../CalculatedField";
 import { NumericInput } from "../NumericInput";
@@ -11,10 +21,10 @@ import { EntrySkeleton } from "../EntrySkeleton";
 import { useMisDay } from "@/hooks/useMisDay";
 
 const fields = [
-  { key: "production", label: "Production (kg)" },
-  { key: "wastage", label: "Wastage (kg)" },
-  { key: "efficiency", label: "Efficiency" },
-  { key: "rp", label: "RP / Re-Production" },
+  { key: "production", label: "Production", icon: Layers, unit: "kg" },
+  { key: "wastage", label: "Wastage", icon: Trash2, unit: "kg" },
+  { key: "efficiency", label: "Efficiency", icon: Activity, unit: "%" },
+  { key: "rp", label: "RP (Re-Production)", icon: RotateCcw, unit: "kg" },
 ] as const;
 
 export function Sheet1Form({ dateKey }: { dateKey: string }) {
@@ -30,6 +40,7 @@ export function Sheet1Form({ dateKey }: { dateKey: string }) {
     rpB: String(data?.sheet1?.rpB ?? 0),
   }));
   const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const readonly = data?.status === "LOCKED";
 
@@ -63,9 +74,29 @@ export function Sheet1Form({ dateKey }: { dateKey: string }) {
     [form],
   );
 
+  // Soft Poka-Yoke sanity warnings
+  const sanityWarning = useMemo(() => {
+    const prodA = Number(form.productionA);
+    const prodB = Number(form.productionB);
+    const wstA = Number(form.wastageA);
+    const wstB = Number(form.wastageB);
+
+    if (prodA > 0 && wstA > prodA) {
+      return "Notice: Shift A Wastage is greater than Production. Please verify the numbers.";
+    }
+    if (prodB > 0 && wstB > prodB) {
+      return "Notice: Shift B Wastage is greater than Production. Please verify the numbers.";
+    }
+    if (prodA > 500000 || prodB > 500000) {
+      return "Notice: Production value is unusually high (> 500,000 kg). Please ensure there are no extra zeros.";
+    }
+    return null;
+  }, [form]);
+
   const save = async () => {
     setSaving(true);
     setError(null);
+    setSaved(false);
     try {
       const res = await fetch(`/api/mis/${dateKey}/sheet-1`, {
         method: "PUT",
@@ -84,6 +115,8 @@ export function Sheet1Form({ dateKey }: { dateKey: string }) {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error ?? "Save failed");
       setData(json);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 3000);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Save failed");
     } finally {
@@ -99,70 +132,119 @@ export function Sheet1Form({ dateKey }: { dateKey: string }) {
       <EntryHeader dateKey={dateKey} status={data.status} title="Sheet 1 - Production / Section A" />
       <SheetNav dateKey={dateKey} current="sheet-1" />
 
+      {/* Guidance Callout */}
+      <div className="flex items-start gap-3 rounded-2xl border border-sky-100 bg-sky-50/60 p-4 text-xs font-medium text-sky-900 shadow-sm">
+        <Info className="mt-0.5 h-4 w-4 shrink-0 text-sky-700" />
+        <p>
+          Enter Shift A (Day) and Shift B (Night) production, wastage, efficiency, and RP. Totals and wastage percentages calculate automatically.
+        </p>
+      </div>
+
+      {/* Poka-Yoke Warning */}
+      {sanityWarning ? (
+        <div className="flex items-start gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-3.5 text-xs font-semibold text-amber-900 shadow-sm">
+          <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600" />
+          <p>{sanityWarning}</p>
+        </div>
+      ) : null}
+
       <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <div className="hidden grid-cols-4 gap-0 border-b border-slate-200 bg-slate-50 p-3 text-sm font-semibold text-slate-700 md:grid">
-          <div>Particular</div>
-          <div>Shift A</div>
-          <div>Shift B</div>
-          <div>Total</div>
+        {/* Table Header with Shift Visual Anchors */}
+        <div className="hidden grid-cols-4 gap-0 border-b border-slate-200 bg-slate-50 p-3.5 text-xs font-bold text-slate-700 md:grid">
+          <div>PARTICULAR</div>
+          <div className="flex items-center gap-1.5 text-amber-900">
+            <Sun className="h-4 w-4 text-amber-600" />
+            <span>SHIFT A (DAY)</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-indigo-900">
+            <Moon className="h-4 w-4 text-indigo-600" />
+            <span>SHIFT B (NIGHT)</span>
+          </div>
+          <div className="text-slate-900">TOTAL (CALCULATED)</div>
         </div>
 
-        {fields.map((field) => (
-          <div key={field.key} className="border-b border-slate-100 p-4">
-            <p className="mb-3 font-semibold text-slate-800 md:hidden">{field.label}</p>
-            <div className="grid gap-3 md:grid-cols-4 md:items-end">
-              <p className="hidden text-sm font-medium text-slate-700 md:block">{field.label}</p>
-              <NumericInput
-                label="Shift A"
-                value={form[`${field.key}A` as keyof typeof form]}
-                disabled={readonly}
-                onChange={(v) => setForm((f) => ({ ...f, [`${field.key}A`]: v } as typeof f))}
-                className="md:hidden"
-              />
-              <NumericInput
-                label="Shift B"
-                value={form[`${field.key}B` as keyof typeof form]}
-                disabled={readonly}
-                onChange={(v) => setForm((f) => ({ ...f, [`${field.key}B`]: v } as typeof f))}
-                className="md:hidden"
-              />
-              <div className="hidden md:block">
+        {fields.map((field) => {
+          const Icon = field.icon;
+          return (
+            <div key={field.key} className="border-b border-slate-100 p-4 last:border-0">
+              <div className="mb-3 flex items-center gap-2 font-bold text-slate-900 md:hidden">
+                <Icon className="h-4 w-4 text-sky-700" />
+                <span>{field.label}</span>
+                {field.unit ? <span className="text-xs font-normal text-slate-400">({field.unit})</span> : null}
+              </div>
+
+              <div className="grid gap-3.5 md:grid-cols-4 md:items-end">
+                <div className="hidden items-center gap-2 text-sm font-bold text-slate-800 md:flex">
+                  <Icon className="h-4 w-4 text-sky-700" />
+                  <span>{field.label}</span>
+                </div>
+
                 <NumericInput
-                  label=""
+                  label="Shift A (Day)"
+                  unit={field.unit}
                   value={form[`${field.key}A` as keyof typeof form]}
                   disabled={readonly}
                   onChange={(v) => setForm((f) => ({ ...f, [`${field.key}A`]: v } as typeof f))}
+                  className="md:hidden"
                 />
-              </div>
-              <div className="hidden md:block">
                 <NumericInput
-                  label=""
+                  label="Shift B (Night)"
+                  unit={field.unit}
                   value={form[`${field.key}B` as keyof typeof form]}
                   disabled={readonly}
                   onChange={(v) => setForm((f) => ({ ...f, [`${field.key}B`]: v } as typeof f))}
+                  className="md:hidden"
                 />
-              </div>
-              {field.key === "production" ? (
-                <CalculatedField label="Total" value={calc.totalProduction} />
-              ) : field.key === "wastage" ? (
-                <CalculatedField label="Total" value={calc.totalWastage} />
-              ) : field.key === "rp" ? (
-                <CalculatedField label="Total" value={calc.totalRp} />
-              ) : (
-                <div className="hidden md:block" />
-              )}
-            </div>
-          </div>
-        ))}
 
-        <div className="grid gap-3 p-4 md:grid-cols-3">
+                <div className="hidden md:block">
+                  <NumericInput
+                    label=""
+                    unit={field.unit}
+                    value={form[`${field.key}A` as keyof typeof form]}
+                    disabled={readonly}
+                    onChange={(v) => setForm((f) => ({ ...f, [`${field.key}A`]: v } as typeof f))}
+                  />
+                </div>
+                <div className="hidden md:block">
+                  <NumericInput
+                    label=""
+                    unit={field.unit}
+                    value={form[`${field.key}B` as keyof typeof form]}
+                    disabled={readonly}
+                    onChange={(v) => setForm((f) => ({ ...f, [`${field.key}B`]: v } as typeof f))}
+                  />
+                </div>
+
+                {field.key === "production" ? (
+                  <CalculatedField label="Total Production" value={calc.totalProduction} suffix="kg" />
+                ) : field.key === "wastage" ? (
+                  <CalculatedField label="Total Wastage" value={calc.totalWastage} suffix="kg" />
+                ) : field.key === "rp" ? (
+                  <CalculatedField label="Total RP" value={calc.totalRp} suffix="kg" />
+                ) : (
+                  <div className="hidden md:block" />
+                )}
+              </div>
+            </div>
+          );
+        })}
+
+        <div className="grid gap-3 border-t border-slate-100 bg-slate-50/50 p-4 md:grid-cols-3">
           <CalculatedField label="Wastage % Shift A" value={calc.wastagePercentA} suffix="%" />
           <CalculatedField label="Wastage % Shift B" value={calc.wastagePercentB} suffix="%" />
           <CalculatedField label="Total Wastage %" value={calc.wastagePercentTotal} suffix="%" />
         </div>
       </div>
 
-      <SaveBar saving={saving} error={error} onSave={save} nextHref={`/entry/${dateKey}/sheet-2`} />
+      <SaveBar
+        saving={saving}
+        saved={saved}
+        error={error}
+        onSave={save}
+        nextHref={`/entry/${dateKey}/sheet-2`}
+        nextLabel="Next: Run MIS"
+      />
     </div>
   );
 }
+

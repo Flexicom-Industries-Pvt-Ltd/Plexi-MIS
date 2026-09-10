@@ -2,6 +2,18 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import {
+  Activity,
+  CheckCircle2,
+  Edit3,
+  Gauge,
+  Info,
+  Layers,
+  Lock,
+  Package,
+  RefreshCw,
+  Send,
+} from "lucide-react";
 import { formatNumber } from "@/lib/utils";
 import { EntryHeader } from "../EntryHeader";
 import { SheetNav } from "../SheetNav";
@@ -9,20 +21,44 @@ import { StatusBadge } from "../StatusBadge";
 import { EntrySkeleton } from "../EntrySkeleton";
 import { useMisDay } from "@/hooks/useMisDay";
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  icon: Icon,
+  editHref,
+  children,
+}: {
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  editHref: string;
+  children: React.ReactNode;
+}) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-      <h2 className="mb-3 text-base font-bold text-slate-900">{title}</h2>
-      <div className="space-y-2 text-sm">{children}</div>
+    <div className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div>
+        <div className="mb-3 flex items-center justify-between border-b border-slate-100 pb-2.5">
+          <div className="flex items-center gap-2">
+            <Icon className="h-4 w-4 text-sky-700" />
+            <h2 className="text-sm font-bold text-slate-900">{title}</h2>
+          </div>
+          <Link
+            href={editHref}
+            className="flex items-center gap-1 rounded-lg bg-sky-50 px-2.5 py-1 text-xs font-semibold text-sky-700 transition hover:bg-sky-100"
+          >
+            <Edit3 className="h-3 w-3" />
+            <span>Edit</span>
+          </Link>
+        </div>
+        <div className="space-y-2 text-sm">{children}</div>
+      </div>
     </div>
   );
 }
 
 function Row({ label, value }: { label: string; value: string | number }) {
   return (
-    <div className="flex justify-between gap-4 border-b border-slate-100 py-2 last:border-0">
+    <div className="flex justify-between gap-4 border-b border-slate-100 py-1.5 text-xs last:border-0 sm:text-sm">
       <span className="text-slate-600">{label}</span>
-      <span className="font-semibold text-slate-900">{typeof value === "number" ? formatNumber(value) : value}</span>
+      <span className="font-bold text-slate-900">{typeof value === "number" ? formatNumber(value) : value}</span>
     </div>
   );
 }
@@ -34,6 +70,13 @@ export function ReviewPage({ dateKey }: { dateKey: string }) {
   const [error, setError] = useState<string | null>(null);
 
   const submit = async () => {
+    if (typeof window !== "undefined" && "vibrate" in navigator) {
+      try {
+        navigator.vibrate(40);
+      } catch {
+        // ignore
+      }
+    }
     setSubmitting(true);
     setError(null);
     try {
@@ -49,6 +92,13 @@ export function ReviewPage({ dateKey }: { dateKey: string }) {
   };
 
   const lock = async () => {
+    if (typeof window !== "undefined" && "vibrate" in navigator) {
+      try {
+        navigator.vibrate(40);
+      } catch {
+        // ignore
+      }
+    }
     setLocking(true);
     setError(null);
     try {
@@ -71,109 +121,114 @@ export function ReviewPage({ dateKey }: { dateKey: string }) {
 
   return (
     <div className="space-y-4">
-      <EntryHeader dateKey={dateKey} status={data.status} title="Review & Submit" />
+      <EntryHeader dateKey={dateKey} status={data.status} title="Review & Submit MIS" />
       <SheetNav dateKey={dateKey} current="review" />
 
+      {/* Guidance Banner */}
+      <div className="flex items-start gap-3 rounded-2xl border border-sky-100 bg-sky-50/60 p-4 text-xs font-medium text-sky-900 shadow-sm">
+        <Info className="mt-0.5 h-4 w-4 shrink-0 text-sky-700" />
+        <p>
+          Verify all 4 sheet figures below. When ready, tap <strong>Submit MIS</strong> to record today&apos;s entry permanently.
+        </p>
+      </div>
+
       <div className="grid gap-4 lg:grid-cols-2">
-        <Section title="Sheet 1 - Production / Section A">
+        <Section title="Sheet 1 - Production / Section A" icon={Layers} editHref={`/entry/${dateKey}/sheet-1`}>
           {s1 ? (
             <>
-              <Row label="Total Production" value={s1.totalProduction} />
-              <Row label="Total Wastage" value={s1.totalWastage} />
-              <Row label="Wastage %" value={`${formatNumber(s1.wastagePercentTotal)}%`} />
-              <Row label="Efficiency A / B" value={`${formatNumber(s1.efficiencyA)} / ${formatNumber(s1.efficiencyB)}`} />
-              <Row label="Total RP" value={s1.totalRp} />
+              <Row label="Total Production" value={`${formatNumber(s1.totalProduction)} kg`} />
+              <Row label="Total Wastage" value={`${formatNumber(s1.totalWastage)} kg`} />
+              <Row label="Total Wastage %" value={`${formatNumber(s1.wastagePercentTotal)}%`} />
+              <Row label="Efficiency A / B" value={`${formatNumber(s1.efficiencyA)}% / ${formatNumber(s1.efficiencyB)}%`} />
+              <Row label="Total RP" value={`${formatNumber(s1.totalRp)} kg`} />
             </>
           ) : (
-            <p className="text-slate-500">No data yet.</p>
+            <p className="text-xs text-slate-500">No data entered yet.</p>
           )}
-          <Link href={`/entry/${dateKey}/sheet-1`} className="mt-2 inline-block text-sm font-medium text-sky-700">
-            Edit Sheet 1
-          </Link>
         </Section>
 
-        <Section title="Sheet 2 - Run MIS">
+        <Section title="Sheet 2 - Run MIS" icon={Package} editHref={`/entry/${dateKey}/sheet-2`}>
           {data.sheet2?.length ? (
             <>
               {data.sheet2.map((row) => (
-                <div key={row.material} className="mb-2 border-b border-slate-100 pb-2 last:mb-0 last:border-0">
-                  <p className="font-semibold text-slate-800">{row.material}</p>
-                  <Row label="A / B / Total Run" value={`${formatNumber(row.shiftA)} / ${formatNumber(row.shiftB)} / ${formatNumber(row.totalRun)}`} />
-                  <Row label="Planned / Gap %" value={`${formatNumber(row.totalRunPlanned)} / ${formatNumber(row.gapPercent)}%`} />
+                <div key={row.material} className="border-b border-slate-100 py-1.5 last:border-0">
+                  <div className="flex justify-between text-xs">
+                    <span className="font-bold text-slate-800">{row.material}</span>
+                    <span className="text-slate-600">
+                      Run: <strong>{formatNumber(row.totalRun)}</strong> / Plan: {formatNumber(row.totalRunPlanned)} (Gap: {formatNumber(row.gapPercent)}%)
+                    </span>
+                  </div>
                 </div>
               ))}
               {data.sheet2Totals ? (
-                <Row
-                  label="All materials total"
-                  value={`Run ${formatNumber(data.sheet2Totals.totalRun)} | Planned ${formatNumber(data.sheet2Totals.totalRunPlanned)} | Gap ${formatNumber(data.sheet2Totals.gapPercent)}%`}
-                />
+                <div className="mt-2 rounded-xl bg-slate-50 p-2.5 text-xs font-semibold text-slate-800">
+                  Total Run: {formatNumber(data.sheet2Totals.totalRun)} | Planned: {formatNumber(data.sheet2Totals.totalRunPlanned)} | Gap: {formatNumber(data.sheet2Totals.gapPercent)}%
+                </div>
               ) : null}
             </>
           ) : (
-            <p className="text-slate-500">No data yet.</p>
+            <p className="text-xs text-slate-500">No data entered yet.</p>
           )}
-          <Link href={`/entry/${dateKey}/sheet-2`} className="mt-2 inline-block text-sm font-medium text-sky-700">
-            Edit Sheet 2
-          </Link>
         </Section>
 
-        <Section title="Sheet 3 - Production Performance">
+        <Section title="Sheet 3 - Production Performance" icon={Activity} editHref={`/entry/${dateKey}/sheet-3`}>
           {s3 ? (
             <>
-              <Row label="Total Production" value={s3.totalProduction} />
-              <Row label="Production Average" value={s3.productionAvgTotal} />
-              <Row label="Total Wastage" value={s3.totalWastage} />
-              <Row label="Wastage %" value={`${formatNumber(s3.wastagePercentTotal)}%`} />
+              <Row label="Total Production" value={`${formatNumber(s3.totalProduction)} kg`} />
+              <Row label="Total Loom Run" value={`${formatNumber(s3.totalLoomRun)} looms`} />
+              <Row label="Production Average" value={`${formatNumber(s3.productionAvgTotal)} kg/loom`} />
+              <Row label="Total Wastage" value={`${formatNumber(s3.totalWastage)} kg`} />
+              <Row label="Total Wastage %" value={`${formatNumber(s3.wastagePercentTotal)}%`} />
             </>
           ) : (
-            <p className="text-slate-500">No data yet.</p>
+            <p className="text-xs text-slate-500">No data entered yet.</p>
           )}
-          <Link href={`/entry/${dateKey}/sheet-3`} className="mt-2 inline-block text-sm font-medium text-sky-700">
-            Edit Sheet 3
-          </Link>
         </Section>
 
-        <Section title="Sheet 4 - Loom Performance">
-          {data.sheet4.length ? (
+        <Section title="Sheet 4 - Loom Performance" icon={Gauge} editHref={`/entry/${dateKey}/sheet-4`}>
+          {data.sheet4?.length ? (
             data.sheet4.map((row) => (
-              <div key={row.material} className="mb-3 border-b border-slate-100 pb-2 last:mb-0 last:border-0">
-                <p className="font-semibold text-slate-800">{row.material}</p>
-                <Row label="A: Prod / Loom / Per Loom" value={`${formatNumber(row.productionA)} / ${formatNumber(row.loomsRunA)} / ${formatNumber(row.productionPerLoomA)}`} />
-                <Row label="B: Prod / Loom / Per Loom" value={`${formatNumber(row.productionB)} / ${formatNumber(row.loomsRunB)} / ${formatNumber(row.productionPerLoomB)}`} />
+              <div key={row.material} className="border-b border-slate-100 py-1.5 last:border-0">
+                <div className="flex justify-between text-xs">
+                  <span className="font-bold text-slate-800">{row.material}</span>
+                  <span className="text-slate-600">
+                    A: {formatNumber(row.productionPerLoomA)}/loom | B: {formatNumber(row.productionPerLoomB)}/loom
+                  </span>
+                </div>
               </div>
             ))
           ) : (
-            <p className="text-slate-500">No data yet.</p>
+            <p className="text-xs text-slate-500">No data entered yet.</p>
           )}
-          <Link href={`/entry/${dateKey}/sheet-4`} className="mt-2 inline-block text-sm font-medium text-sky-700">
-            Edit Sheet 4
-          </Link>
         </Section>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-slate-200 bg-white/95 p-4 backdrop-blur safe-bottom-pad">
+      {/* Fixed Sticky Submission Bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-30 border-t border-slate-200 bg-white/95 p-3.5 backdrop-blur safe-bottom-pad shadow-lg">
         <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-slate-600">Status:</span>
+            <span className="text-xs font-semibold text-slate-600">Record Status:</span>
             <StatusBadge status={data.status} />
-            {error ? <p className="text-sm text-red-600">{error}</p> : null}
+            {error ? <p className="text-xs font-bold text-red-600">{error}</p> : null}
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2.5">
             <button
               type="button"
               onClick={() => refresh()}
-              className="min-h-[48px] rounded-xl border border-slate-300 px-4 py-3 text-sm font-semibold"
+              className="flex min-h-[48px] items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-4 py-3 text-xs font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50"
             >
-              Refresh
+              <RefreshCw className="h-3.5 w-3.5" />
+              <span>Refresh</span>
             </button>
             {data.status === "DRAFT" ? (
               <button
                 type="button"
                 onClick={submit}
                 disabled={submitting}
-                className="min-h-[48px] rounded-xl bg-sky-700 px-5 py-3 text-sm font-semibold text-white disabled:opacity-60"
+                className="flex min-h-[48px] items-center gap-2 rounded-xl bg-sky-700 px-6 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-sky-800 disabled:opacity-60"
               >
-                {submitting ? "Submitting..." : "Submit MIS"}
+                <Send className="h-4 w-4" />
+                <span>{submitting ? "Submitting MIS..." : "Submit MIS Record"}</span>
               </button>
             ) : null}
             {data.status === "SUBMITTED" ? (
@@ -181,10 +236,17 @@ export function ReviewPage({ dateKey }: { dateKey: string }) {
                 type="button"
                 onClick={lock}
                 disabled={locking}
-                className="min-h-[48px] rounded-xl bg-slate-800 px-5 py-3 text-sm font-semibold text-white disabled:opacity-60"
+                className="flex min-h-[48px] items-center gap-2 rounded-xl bg-slate-900 px-6 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-black disabled:opacity-60"
               >
-                {locking ? "Locking..." : "Lock (Finalize)"}
+                <Lock className="h-4 w-4" />
+                <span>{locking ? "Locking Record..." : "Lock (Finalize Record)"}</span>
               </button>
+            ) : null}
+            {data.status === "LOCKED" ? (
+              <div className="flex items-center gap-1.5 rounded-xl bg-emerald-50 px-4 py-3 text-xs font-bold text-emerald-800">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                <span>Finalized & Locked</span>
+              </div>
             ) : null}
           </div>
         </div>
@@ -192,3 +254,4 @@ export function ReviewPage({ dateKey }: { dateKey: string }) {
     </div>
   );
 }
+
