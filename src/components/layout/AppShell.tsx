@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BarChart3, CalendarDays, ClipboardList, LayoutDashboard, Menu, X } from "lucide-react";
@@ -28,8 +29,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-slate-50">
       <header className="sticky top-0 z-40 border-b border-slate-200 bg-white/95 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-          <Link href="/" className="font-semibold text-slate-900">
-            Plascom MIS
+          <Link href="/" className="flex items-center gap-2.5">
+            <div className="flex shrink-0 items-center justify-center rounded-lg border border-slate-100 bg-white p-1 shadow-sm">
+              <Image
+                src="/logo.png"
+                alt="Flexicom"
+                width={36}
+                height={36}
+                className="h-9 w-9 object-contain"
+                priority
+              />
+            </div>
+            <div className="flex flex-col leading-tight">
+              <span className="text-sm font-extrabold tracking-tight text-slate-900 sm:text-base">Flexicom</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-700">Plascom MIS</span>
+            </div>
           </Link>
           <button
             type="button"
