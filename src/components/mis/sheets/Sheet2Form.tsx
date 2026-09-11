@@ -130,7 +130,7 @@ export function Sheet2Form({ dateKey }: { dateKey: string }) {
 
   return (
     <div className="space-y-4">
-      <EntryHeader dateKey={dateKey} status={data.status} title="Sheet 2 - Run MIS" />
+      <EntryHeader dateKey={dateKey} status={data.status} title="Sheet 2 - Tape Plant Recipe" />
       <SheetNav dateKey={dateKey} current="sheet-2" />
 
       {/* Guidance Banner */}

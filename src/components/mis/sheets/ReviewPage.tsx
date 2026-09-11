@@ -133,7 +133,7 @@ export function ReviewPage({ dateKey }: { dateKey: string }) {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Section title="Sheet 1 - Production" icon={Layers} editHref={`/entry/${dateKey}/sheet-1`}>
+        <Section title="Sheet 1 - Tape Plant Production" icon={Layers} editHref={`/entry/${dateKey}/sheet-1`}>
           {s1 ? (
             <>
               <Row label="Total Production" value={`${formatNumber(s1.totalProduction)} kg`} />
@@ -147,7 +147,7 @@ export function ReviewPage({ dateKey }: { dateKey: string }) {
           )}
         </Section>
 
-        <Section title="Sheet 2 - Run MIS" icon={Package} editHref={`/entry/${dateKey}/sheet-2`}>
+        <Section title="Sheet 2 - Tape Plant Recipe" icon={Package} editHref={`/entry/${dateKey}/sheet-2`}>
           {data.sheet2?.length ? (
             <>
               {data.sheet2.map((row) => (
@@ -171,7 +171,7 @@ export function ReviewPage({ dateKey }: { dateKey: string }) {
           )}
         </Section>
 
-        <Section title="Sheet 3 - Production Performance" icon={Activity} editHref={`/entry/${dateKey}/sheet-3`}>
+        <Section title="Sheet 3 - Loom Production" icon={Activity} editHref={`/entry/${dateKey}/sheet-3`}>
           {s3 ? (
             <>
               <Row label="Total Production" value={`${formatNumber(s3.totalProduction)} kg`} />
@@ -185,7 +185,7 @@ export function ReviewPage({ dateKey }: { dateKey: string }) {
           )}
         </Section>
 
-        <Section title="Sheet 4 - Loom Performance" icon={Gauge} editHref={`/entry/${dateKey}/sheet-4`}>
+        <Section title="Sheet 4 - Loom Quality Check Production" icon={Gauge} editHref={`/entry/${dateKey}/sheet-4`}>
           {data.sheet4?.length ? (
             data.sheet4.map((row) => (
               <div key={row.material} className="border-b border-slate-100 py-1.5 last:border-0">

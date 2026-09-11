@@ -3,14 +3,14 @@ import "./globals.css";
 import { AppShell } from "@/components/layout/AppShell";
 
 export const metadata: Metadata = {
-  title: "Plascom Production MIS",
-  description: "Daily production MIS entry, history, and dashboards",
+  title: "LOOM PRODUCTION | Flexicom",
+  description: "Daily Loom Production MIS entry, history, and dashboards",
   manifest: "/manifest.json",
-  applicationName: "Plascom MIS",
+  applicationName: "LOOM PRODUCTION",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
-    title: "Plascom MIS",
+    title: "LOOM PRODUCTION",
   },
   formatDetection: {
     telephone: false,
