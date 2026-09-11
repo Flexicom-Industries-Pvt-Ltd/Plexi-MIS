@@ -6,10 +6,10 @@ import { cn } from "@/lib/utils";
 import { useMisDay } from "@/contexts/MisDayContext";
 
 const sheets = [
-  { n: 1, label: "Production", href: "sheet-1", sub: "Shift Wise" },
-  { n: 2, label: "Run MIS", href: "sheet-2", sub: "5 Materials" },
-  { n: 3, label: "Performance", href: "sheet-3", sub: "Averages" },
-  { n: 4, label: "Loom", href: "sheet-4", sub: "Fabric Wise" },
+  { n: 1, label: "Tape Plant Production", href: "sheet-1", sub: "Shift Wise" },
+  { n: 2, label: "Tape Plant Recipe", href: "sheet-2", sub: "5 Materials" },
+  { n: 3, label: "Loom Production", href: "sheet-3", sub: "Averages" },
+  { n: 4, label: "Loom Quality Check Production", href: "sheet-4", sub: "Fabric Wise" },
   { n: 5, label: "Review & Submit", href: "review", sub: "Finalize" },
 ];
 
@@ -61,7 +61,11 @@ export function SheetNav({ dateKey, current }: { dateKey: string; current: strin
       <div className="rounded-xl border border-slate-200 bg-white px-4 py-2.5 shadow-sm">
         <div className="flex items-center justify-between text-xs font-semibold text-slate-700">
           <span>
-            Step {currentStep} of {sheets.length}: <span className="text-sky-700">{sheets[currentIndex]?.label}</span>
+            Step {currentStep} of {sheets.length}:{" "}
+            <span className="text-sky-700">
+              {currentIndex < 4 ? `Sheet ${currentIndex + 1}: ` : ""}
+              {sheets[currentIndex]?.label}
+            </span>
           </span>
           <span className="text-slate-500">{progressPercent}% Completed</span>
         </div>
@@ -87,7 +91,7 @@ export function SheetNav({ dateKey, current }: { dateKey: string; current: strin
               prefetch
               scroll={false}
               className={cn(
-                "group relative flex min-h-[52px] items-center gap-2 rounded-xl border p-2.5 text-left transition-all duration-150 touch-manipulation",
+                "group relative flex min-h-[56px] items-center gap-2 rounded-xl border p-2.5 text-left transition-all duration-150 touch-manipulation",
                 isLast ? "col-span-2 sm:col-span-1" : "",
                 active
                   ? "border-sky-600 bg-sky-50/80 shadow-sm ring-2 ring-sky-500/20"
@@ -115,9 +119,12 @@ export function SheetNav({ dateKey, current }: { dateKey: string; current: strin
                 )}
               </div>
               <div className="min-w-0 flex-1">
+                <p className="text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                  {sheet.n <= 4 ? `Sheet ${sheet.n}` : "Step 5"}
+                </p>
                 <p
                   className={cn(
-                    "truncate text-xs font-bold",
+                    "truncate text-xs font-bold leading-tight",
                     active ? "text-sky-900" : completed ? "text-emerald-900" : "text-slate-800",
                   )}
                 >

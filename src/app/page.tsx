@@ -9,7 +9,7 @@ export default function HomePage() {
   return (
     <div className="space-y-6">
       <div className="rounded-2xl border border-sky-200 bg-gradient-to-br from-sky-50 to-white p-6 shadow-sm">
-        <p className="text-sm font-semibold uppercase tracking-wide text-sky-700">Plascom Production MIS</p>
+        <p className="text-sm font-semibold uppercase tracking-wide text-sky-700">LOOM PRODUCTION</p>
         <h1 className="mt-1 text-2xl font-bold text-slate-900">Daily production reporting</h1>
         <p className="mt-2 text-slate-600">Today: {todayLabel}</p>
       </div>

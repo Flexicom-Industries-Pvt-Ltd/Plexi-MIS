@@ -128,7 +128,7 @@ export function Sheet4Form({ dateKey }: { dateKey: string }) {
 
   return (
     <div className="space-y-4">
-      <EntryHeader dateKey={dateKey} status={data.status} title="Sheet 4 - Loom Performance" />
+      <EntryHeader dateKey={dateKey} status={data.status} title="Sheet 4 - Loom Quality Check Production" />
       <SheetNav dateKey={dateKey} current="sheet-4" />
 
       {/* Guidance Banner */}

@@ -34,7 +34,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <HiddenAdminPanel />
             <Link href="/" className="flex flex-col leading-tight">
               <span className="text-sm font-extrabold tracking-tight text-slate-900 sm:text-base">Flexicom</span>
-              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-700">Plascom MIS</span>
+              <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-sky-700">LOOM PRODUCTION</span>
             </Link>
           </div>
           <div className="flex items-center gap-2">
